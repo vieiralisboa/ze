@@ -1,0 +1,20 @@
+{
+    "name": "E I",
+    "description": "Página pessoal do curso Engenharia Informática no ISEC.",
+    "items": [
+        {
+            "text": "IP",
+            "attr":{
+                "href": "/ISEC/IP/",
+                "id": "isec-ip"
+            }
+        },
+        {
+            "text": "TWeb",
+            "attr":{
+                "href": "/ISEC/TWeb/",
+                "id": "isec-tweb"
+            }
+        }
+    ]     
+}

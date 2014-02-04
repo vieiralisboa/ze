@@ -1,0 +1,33 @@
+{
+    "name": "Início",
+    "description": "Situs Home Page",
+    "items": [
+    {
+        "text": "Video Player",
+        "attr": { 
+            "id": "tv-shows-trigger",
+            "href": "#!VideoPlayer"
+        }
+    },
+    {
+        "text": "Web Development",
+        "attr":{
+            "href": "#!WebDevelopment"
+        }
+    },
+    {
+        "text": "EI",
+        "css":{"display": "none"},
+        "attr":{
+            "href": "#!EI",
+            "id": "isec-ei",
+            "_BUG_":"href #EI does not select toolbox only href #!EI selects toolbox"
+        }
+    },
+    {
+        "text": "blog",
+        "attr":{
+            "href": "#blog"
+        }
+    }]
+}

@@ -1,0 +1,63 @@
+{
+	"name": "Minify",
+	"description": "Closer Compiler UI Minify JavaScript code.",
+
+	"items": [{
+		"el": "div",
+		"css": {
+			"display": "none",
+			"padding": "0 7px 0 0",
+			"border": "none"
+		},
+		"attr": {	
+			"id": "file-upload"
+		}
+	},
+	{
+		"text": "Upload",
+		"attr": {
+			"title": "Upload a JavaScript File",
+			"href": "#Minify/upload" 
+		}
+	},
+	{
+		"text": "Download",
+		"attr": {	
+			"id": "download-file",
+			"href": "#Minify/download" 
+		}
+	},
+	{
+		"text": "JavaScript",
+		"attr": { 
+			"id":"uglify-view",
+			"href": "#Minify/javascript",
+			"data-toggle": "code",
+			"class": "selected"
+		}
+	},
+	{
+		"text": "Minified",
+		"attr": { 
+			"data-toggle": "code",
+			"id": "minify-view",
+			"href": "#Minify/minified"
+		}
+	},
+	{
+		"text": "Compile",
+		"css":{
+			"display": "block"
+		},
+		"attr": { 
+			"id": "compile-code",
+			"href": "#Minify/compile" 
+		}
+	},
+	{
+		"text": "Clear Code",
+		"attr": {
+			"href": "#Minify/clear"
+		}
+	}]
+}

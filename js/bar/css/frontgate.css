@@ -1,0 +1,107 @@
+@charset "utf-8";
+
+button::-moz-focus-inner {
+    border: 0;
+}
+
+* {
+	outline: none;
+}
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, p, blockquote, table, th, td {
+    margin: 0px;
+    padding: 0px;
+}
+
+body {
+    font-size: 62.5%;
+    font-family: sans-serif;
+    line-height: 22px;
+
+    /*
+    background: none repeat scroll 0% 0% rgb(245, 245, 245);
+    color: rgb(68, 68, 68);
+    */
+
+    background: none repeat scroll 0 0 #222222;
+    color: #DDDDDD;
+
+    /* stupid firefox */
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    width: 100%;
+
+    /*---------------------------------
+    http://stackoverflow.com/a/6900392
+    ---------------------------------*/
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+
+    /* Rules below not implemented in browsers yet */
+    -o-user-select: none;
+    user-select: none;
+}
+
+a {
+    text-decoration: none;
+}
+a:active,
+a:focus {
+    outline: none;
+    -moz-outline-style: none;
+}
+
+/*
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 300;
+    src: url('/css/web fonts/opensans_light_macroman/OpenSans-Light-webfont.eot');
+    src: local('Open Sans Light'), local('OpenSans-Light'),
+    url('/css/web fonts/opensans_light_macroman/OpenSans-Light-webfont.woff') format('woff');
+}
+
+@font-face {
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 400;
+    src: local('Open Sans'), local('OpenSans'),
+        url('/css/web fonts/opensans_regular_macroman/OpenSans-Regular-webfont.woff') format('woff');
+}
+
+@font-face {
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 600;
+    src: url('/css/web fonts/opensans_semibold_macroman/OpenSans-Semibold-webfont.eot');
+    src: local('Open Sans Semibold'), local('OpenSans-Semibold'),
+        url('/css/web fonts/opensans_semibold_macroman/OpenSans-Semibold-webfont.woff') format('woff');
+}
+
+@font-face {
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 800;
+    src: url('/css/web fonts/opensans_bold_macroman/OpenSans-Bold-webfont.eot');
+    src: local('Open Sans Bold'),
+        local('OpenSans-Bold'),
+        url('/css/web fonts/opensans_bold_macroman/OpenSans-Bold-webfont.woff') format('woff');
+}
+*/
+
+@font-face {
+    font-family: 'Trajan';
+    src: url('fonts/trajan/fonts/Trajan-Regular.eot');
+    src: local('Trajan'), url('fonts/trajan/fonts/Trajan-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Trajan';
+    src: url('fonts/trajan/fonts/Trajan-Bold.eot');
+    src: local('Trajan Bold'),url('fonts/trajan/fonts/Trajan-Bold.woff') format('woff');
+    font-weight: 800;
+    font-style: normal;
+}

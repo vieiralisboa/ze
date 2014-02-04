@@ -1,0 +1,24 @@
+{
+    "name": "Video Player",
+    "description": "HTML5 Video Player",
+    "items": [
+        {
+            "el": "input",
+            "attr": {
+                "id": "video-show-input",
+                "type": "file",
+                "accept": "video/*"
+            },
+            "css": { 
+                "display": "none" 
+            }
+        },
+        {
+            "text": "Browse",
+            "attr":{
+                "href": "#myTV/browse",
+                "id": "video-browse"
+            }
+        }
+    ]     
+}

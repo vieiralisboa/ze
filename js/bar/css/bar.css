@@ -1,0 +1,275 @@
+
+*.hidden {
+    display: none;
+}
+
+*.visible {
+    display: inline;
+}
+
+*.disabled {
+    filter: gray;
+    -webkit-filter: grayscale(1);
+    opacity: 0.25;
+}
+
+
+/*-------------------
+   Bar (container)
+--------------------*/
+.bar-container {
+    /*
+    height: 120px;
+    height: 80px;
+    display: block;
+    */
+    
+    display: block;
+    text-align: center;
+
+    width: 100%;
+    
+    /*min-width: 960px;*/
+    background: none repeat scroll 0% 0% rgb(34, 34, 34);
+    padding: 0px;    
+    margin: 0px;
+
+/*
+border: solid rgba(255, 255, 255, .25) 1px;
+padding: 1px;    
+margin: -1px;
+*/
+}
+
+/*---------------------
+    Toolbar Wrapper
+---------------------*/
+.bar {
+    /* side borders
+    border-right: solid rgba(255,0,0,.1) 1px;
+    border-left: solid rgba(255,0,0,.1) 1px;
+    */
+
+/*DEV
+    border: solid rgba(0,128,0,.5) 1px;
+    padding: 0px;
+    margin: -1px;
+*/
+
+    clear: both;
+    /* Alternative w auto margin (.toolbar-container{text-align:center;}) 
+    width: 960px;
+    display: block;
+    margin: 0 auto;
+    */
+    
+    /*
+    width: 960px;
+    */
+    
+    width: 100%;
+    display: inline-block;
+    vertical-align: bottom !important;
+}
+
+/* toolbar items
+ .bar-items */
+.bar > ul {
+    list-style: none outside none;
+    width: 100%;
+    /*margin-top: -15px;*/
+    float: left;
+}
+
+/* toolbar item
+.bar-item */
+.bar > ul > li {
+    float: left;
+    position: relative;
+    /*height: 32px;*/
+    height: auto !important;
+}
+
+/* .bar-item a */
+.bar >ul > li a {
+    font-family: "Open Sans",Helvetica,Arial,"Liberation Sans",sans-serif;
+    font-weight: 600;
+    display: block;
+    line-height: 32px;
+    padding: 0px 6px;
+    margin: 0px 4px;
+    font-size: 13px;
+    color: rgb(221, 221, 221);
+    /*height: 48px;
+    height: 32px; */
+
+    transition: all .5s linear;
+    -moz-transition: all .5s linear;
+    -webkit-transition: all .5s linear;
+    -o-transition: all .5s linear;
+}
+.bar >ul > li a:not([href]){
+    cursor: default;
+}
+.bar > ul > li a:hover,
+.bar > ul > li a.selected,
+.bar > ul > li .selected{    
+    color: rgb(200, 150, 100);
+    color: rgb(250, 200, 100);  
+}
+
+/*
+.bar > ul > li a:hover {
+    color: rgb(200, 150, 100);
+    color: rgb(250, 200, 100);
+    color: rgb(47, 170, 221);
+}
+*/
+
+/*-----------------------------------
+    Toolbox Header (toolbox title)
+-----------------------------------*/
+
+ul.toolbox-items {
+    margin-top: 0;
+}
+
+.toolbox {
+    display: none;
+}
+
+.toolbox.selected{
+    display: block;
+}
+
+.toolbox.selected ul {}
+
+/*-------------
+   Navigator
+-------------*/
+.bar.navigator > ul{
+    padding: 2px 0px;
+    line-height: 16px;
+    height: 16px;
+}
+
+.bar.navigator > ul > li a{
+    font-weight: 400;
+    color: rgb(100,100,100);
+    font-size: 12px;
+    line-height: 16px;
+    margin: 0;
+    padding: 0px;
+}
+
+.bar.navigator > ul > li{
+    margin: 0 4px; 
+}
+
+.bar.navigator > ul > li:first-child{
+    margin-left: 10px;
+} 
+
+.bar.navigator > ul > li.selected a:hover,
+li.toolbox-nav:hover a,
+li.toolbox-nav a:hover {
+    color: rgb(200, 150, 100);
+    color: rgb(250, 200, 100);
+}
+
+.bar.navigator > ul li.selected a{
+    color: rgb(200, 150, 100);
+    color: rgb(250, 200, 100);
+    color: rgb(230, 180, 80);
+    
+    cursor: default;
+}
+.container{
+    width: 960px;
+    margin: 0px auto;
+    clear: both;
+}
+
+
+/*--------------
+    Buttons 
+--------------*/
+
+.bar > ul > li .button,
+.button {
+    display: inline-block;
+    margin: 0;
+    border-width: 1px;
+    border-style: solid;
+    -webkit-border-radius: 3px;
+    -webkit-appearance: none;
+    border-radius: 3px;
+    white-space: nowrap;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background: #f3f3f3;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#fefefe), to(#f4f4f4));
+    background-image: -webkit-linear-gradient(top, #fefefe, #f4f4f4);
+    background-image: -moz-linear-gradient(top, #fefefe, #f4f4f4);
+    background-image: -o-linear-gradient(top, #fefefe, #f4f4f4);
+    background-image: linear-gradient(to bottom, #fefefe, #f4f4f4);
+    border-color: #bbb;
+    text-shadow: 0 1px 0 #fff;
+    font-weight: normal !important;
+    line-height: 10px;
+    font-size: 10px;
+    height: 21px;
+    padding: 0 8px 1px;
+}
+
+.bar > ul > li .button a,
+.button a {
+    color: #21759b;
+    text-decoration: none;
+    font-weight: normal !important;
+    line-height: 20px;
+}
+
+.button a, 
+.button a:hover{ 
+    border: none !important;
+}
+
+.button a:hover { 
+    color: #d54e21; 
+
+}
+
+.bar > ul > li .button a:visited,
+.button a:visited {  
+    color: #4ca6cf; 
+}
+
+/* inside toolbar */
+.bar > ul > li span.button {
+    margin: 5px;
+    height: 22px;
+    /* 20+2*6=32
+    border: none;
+    margin: 6px;
+    height: 20px;
+    background: rgb(221,221,221);
+    */
+}
+.bar > ul > li .button a{
+    padding: 0px;
+    margin: 0px;
+    font-weight: normal !important;
+    font-size: 10px;
+    height: 20px;
+    vertical-align: top;
+    background: none;
+    cursor: pointer;
+}
+
+.bar > ul > li .button a:hover,
+.bar > ul > li .button:hover a,
+.bar > ul > li:hover span.button a{
+     color: #d54e21; 
+}

@@ -1,0 +1,33 @@
+{
+	"name": "Schema",
+	"description": "Data models like javascript Backbone models require REST API services to access and edit data on servers. Schema makes that possible without having to setup the API on the server side, because Schema is a Javascript model with a Situs REST controller on the server side. Schema is also a Backbone model and with its own Situs controller creates RESTfull APIs on servers with the Situs PHP Framework. The data schema for a model is uploaded to the server and a REST controller for that model is ready to use. Thats's it.",
+
+	"items": [{
+		"text": "Usage",
+		"attr": {
+			"title": "Straighforward Usage",
+			"href": "#Schema/usage" 
+		}
+	},
+	{
+		"text": "tasks Schema",
+		"attr": {
+			"href": "#Schema/tasks"
+		}
+	},
+	{
+		"text": "tasks API",
+		"css":{
+			"display": "block"
+		},
+		"attr": { 
+			"href": "#Schema/API" 
+		}
+	},
+	{
+		"text": "Schema Controller",
+		"attr": {
+			"href": "#Schema/controller"
+		}
+	}]
+}

@@ -1,0 +1,24 @@
+{
+	"name": "Home",
+	"description": "Frontgate JavaScript Library",
+
+	"items": [{
+		"text": "Frontgate",
+		"attr": {
+			"title": "Straighforward Usage",
+			"href": "frontgate/index.html"
+		}
+	},
+	{
+		"text": "Router",
+		"attr": {
+			"href": "#Frontgate/router"
+		}
+	},
+	{
+		"text": "Situs",
+		"attr": { 
+			"href": "#Frontgate/situs"
+		}
+	}]
+}

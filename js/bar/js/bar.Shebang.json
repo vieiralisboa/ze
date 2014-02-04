@@ -1,0 +1,50 @@
+{
+	"App": {},
+	"name": "Shebang",
+	"description": "Shebang tests. Hashbang (#!) and escaped fragment (?_escaped_fragment_=) tests.",
+	"items": [{ 
+			"text": "Home",
+			"attr":{
+				"title": "This is a shebang",
+				"href": "#!Home",
+				"style": "cursor: default;"
+			}
+		},
+		{ 
+			"text": "#!Home",
+			"attr":{
+				"title": "This is a shebang request",
+				"href": "?_escaped_fragment_=Home"
+			}
+		},
+		{ 	
+			"text": "Zé",
+			"attr":{
+				"title": "this shebang contains foreign characters",
+				"href": "#!Zé",
+				"style": "cursor: default;"
+			}
+		},
+		{ 
+			"text": "#!Zé",
+			"attr":{
+				"title": "this shebang request contains foreign characters",
+				"href": "?_escaped_fragment_=Zé"
+			}
+		},
+		{ 	
+			"text": "#!Nope",
+			"attr":{
+				"title": "this shebang request doesn't receive a snapshot",
+				"href": "?_escaped_fragment_=Nope"
+			}
+		},
+		{ 	
+			"text": "Not",
+			"attr":{
+				"title": "this is Not a shebang",
+				"href": "#Not",
+				"style": "cursor: default;"
+			}
+		}]
+}

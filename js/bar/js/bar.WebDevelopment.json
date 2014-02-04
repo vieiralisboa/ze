@@ -1,0 +1,25 @@
+{
+    "name": "Web Development",
+    "description": "Web Development Tools and Examples",
+    "items": [{
+        "text": "Closer Compiler UI",
+        "attr":{
+            "href": "#!Minify"
+        }
+    },
+    {
+        "text": "Situs Schema",
+        "attr":{
+            "href": "https://xn--stio-vpa.pt/situs.schema"
+        },
+        "_attr":{
+            "href": "#!Schema"
+        }
+    },
+    {
+        "text": "Frontgate",
+        "attr":{
+            "href": "http://xn--stio-vpa.pt:80/frontgate/public/"
+        }
+    }]
+}
