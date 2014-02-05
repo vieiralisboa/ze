@@ -40,6 +40,7 @@ $.getScript("https://situs.xn--stio-vpa.pt/situs/js/frontgate?router", function(
 			})
 			.panel()
 			.css("padding", 0)
+			.css("cursor","move")
 			.find('ul.panel-header').hide();
 
 			// try create bar without arguments
@@ -82,6 +83,7 @@ $.getScript("https://situs.xn--stio-vpa.pt/situs/js/frontgate?router", function(
 				},
 				callback: function(bar){
 					console.log("#bar.bar", bar);
+					bar.toolbar.$bar.css("cursor","move");
 				}
 			})
 			.css("opacity", .9)
@@ -149,9 +151,10 @@ $.getScript("https://situs.xn--stio-vpa.pt/situs/js/frontgate?router", function(
 				items:[{
 					text: "Bar",
 					css: {
-						"font-family": "'Open Sans', Helvetica, Arial, 'Liberation Sans', sans-serif",
-						"font-weight":"600",
-						"font-style": "normal"
+						//"font-family": "'Open Sans', Helvetica, Arial, 'Liberation Sans', sans-serif",
+						"font-weight":"800",
+						"font-style": "normal",
+						"font-size":"14px"
 					},
 
 					attr: {
