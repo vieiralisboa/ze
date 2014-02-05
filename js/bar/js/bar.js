@@ -387,6 +387,7 @@
 
             if(this.app[index]){
                 this.app[aliasIndex] = this.app[index];
+                Frontgate.Apps(aliasName, Frontgate.Apps(appName));
                 return this.app[index];
             }
             else throw "no such app " + appName;
@@ -414,7 +415,7 @@
     _requestHash: null,
     load: function(barSelector, callback, jsonFile, appName){
         jsonFile = jsonFile || BAR_JSON;// BAR_JSON from Situs controller
-        appName = appName || BAR_NAME;// BAR_NAME from Situs controller
+        //appName = appName || BAR_NAME;// BAR_NAME from Situs controller
 
         $.get(Remote.href(jsonFile), function(data){
             data = parseInt($.fn.jquery) > 1 ? data : JSON.parse(data);
@@ -455,8 +456,6 @@
         // app name b64 encoded (to allow any app name)
         var b64 = Frontgate.b64(urls.name);
 
-        //REVIEW Bar.app
-
         // bar[<urls.b64>] the app is set (the script already loaded)
         if( Bar.app[b64] ){
             // select the toolbox tab
@@ -467,10 +466,9 @@
         else{
             // load required script 'bar/js/bar.<toolbox.name>.js'
             var script = this.autoLoad.location.href(urls.script);
-            $.getScript(script,
-                    function(data, textStatus, jqxhr){
+            $.getScript(script, function(data, textStatus, jqxhr){
                 if(textStatus != "success") throw "error loading " + script;
-                if(callback) callback(false, null, jqxhr);
+                if(callback) callback(data, textStatus, jqxhr);
             });
         }
 
@@ -486,11 +484,12 @@
 
         // starts auto loading bars
         start: function(location){
-            if(this.started) return;
-            this.started = true;
+            if(this.started) return false;
 
             // auto load requires Frontgate
             if(!Frontgate) return false;
+
+            this.started = true;
 
             // location to auto load bars from
             this.location = location || Frontgate;
@@ -503,7 +502,7 @@
                     // select addon tab
                     if(!error && app && app.href){
                         Frontgate.router.route(app.href);
-                        console.info("getBar", app);
+                        //console.info("getBar", app);
                     }
 
                     //else console.error("error getBar", hash);
@@ -532,5 +531,17 @@
 
         // load stylesheet
         //this.styles.load(location);
+
+        return this;
+    },
+
+    route: function(hash, callback){
+        if(this.autoLoad.started)
+            Frontgate.router.route(hash, callback);
+        else throw "AutoLoad is disabled";
+
+        //Bar.getBar(Bar.urls(hash), callback);
+
+        return this;
     }
 });
