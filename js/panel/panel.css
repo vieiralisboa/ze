@@ -1,0 +1,98 @@
+.panel {
+	position: absolute;
+	display: inline-block;
+
+	-webkit-user-select: none;  /* Chrome all / Safari all */
+	-moz-user-select: none;     /* Firefox all */
+	-ms-user-select: none;      /* IE 10+ */
+
+	/* No support for these yet, use at own risk */
+	-o-user-select: none;
+	user-select: none;
+
+	cursor: default;
+
+	/*myVioletRose
+	background-color: rgba(160,135,145,.95);*/
+	/*RosyBrown  188,143,143	BC8F8F
+	background-color: rgba(188, 143, 143,.9);*/
+	/*MistyRose 	FF E4 E1 	255 228 225
+	background-color: rgba(255, 228, 225,.9);*/
+	/*Linen 	FA F0 E6 	250 240 230
+	background-color:rgba(250, 240, 230, .9);
+	background-color:rgba(250, 240, 230, .9);*/
+
+	/* whiteSmoke
+	background-color: rgb(245, 245, 245);*/
+	/*background-color: rgb(212, 224, 197); pale baby blue */
+	/*background-color: rgb(142, 196, 178); baby blue */
+	/* background-color: rgb(43, 81, 74); */
+
+	/*
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+	border: solid rgba(255, 255, 255, .25) 1px;
+	border-radius: 2px;*/
+
+	color: rgba(0,0,0,.75);
+	text-decoration: none;
+	text-align: left;
+	vertical-align: top;
+}
+
+.panel > ul{
+	display: block;
+	position: absolute;
+
+	font-size: 14px;
+	padding: 0px;
+	margin: 0px;
+
+	left: 0px;
+	right: 0px;
+	top: 0px;
+
+	text-align: left;
+	list-style: none;
+	color: rgba(0, 0, 0, .5);
+}
+.panel > ul li:first{
+	color: rgba(0, 0, 0, .35);
+}
+
+.panel .control {
+	/* set in Constructor
+	margin: 10px;
+	width: 10px;
+	height: 10px;
+	*/
+
+	border: solid rgba(128, 128, 128, .5) 1px;
+	border-radius: 10px;
+	background-color: none;
+	cursor: pointer;
+	transition: all 1s linear;
+}
+
+.control:hover,
+.control.selected:hover,
+.panel .control:hover {
+	background-color: rgba(190,0,0,.5);
+}
+
+.control.green:hover{
+	background-color: rgba(0,190,0,.5);
+}
+
+.control.blue:hover{
+	background-color: rgba(80,110,160, .75);/* rgba(0,0,190,.5);*/
+}
+
+.control.selected,
+.panel .control.selected {
+	cursor: default;
+	background-color: rgba(131,120,120,.5);
+}
+
+.panel-control{
+	/*float: right;*/
+}
