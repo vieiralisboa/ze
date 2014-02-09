@@ -34,17 +34,16 @@ $.get(Remote.href("hosts/%host%/js/bar.Home.json".replace("%host%", $('html').at
 });
 //*/
 
-
 Bar.load('#header', function(bar, data){
-    
+
     Frontgate.router.on("#Home", function(hash){
         location.hash = "Início";
     });
 
     // mostrar item IE apenas se o utilizador for "daniel"
-    if(Situs.attr().user == "daniel") $("#isec-ei").show();
+    if(Frontgate.attr().user == "daniel") $("#isec-ei").show();
 
-    Situs.subscribeEvent('userChange', function(attr){
+    Frontgate.subscribeEvent('userChange', function(attr){
         if(attr.user == "daniel") $("#isec-ei").show();
         else $("#isec-ei").hide();
     });
