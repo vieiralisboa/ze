@@ -1,13 +1,42 @@
-// Requires Frontgate Bbar
-// Requires Situs Upload
+// Requires Frontgate, jQuery Uploader plugin, closure_compiler controller
+
+Remote = window.Remote || new Frontgate.Location({
+    hostname: "xn--stio-vpa.pt",
+    protocol: "https:"
+});
+
+Situs = window.Situs || new Frontgate.Location({
+    hostname: "situs.xn--stio-vpa.pt",
+    protocol: "https:"
+});
+
+//TODO auto create the Situs closure_compiler controller (API)
 
 (function(Minify) {
+
+    Minify.API = new Frontgate.Location({
+        hostname: "situs.xn--stio-vpa.pt",
+        protocol: "https:"//,pathname: "/closer-compiler"
+    });
+
+    Minify.API.auth({
+        user: "guest",
+        pw: "guest"
+    });
+
+    /*/
+    console.info("API.href()", API.href());
+    console.info("API.hrefAuth()", API.hrefAuth());
+    console.info("API.href('closer-compiler')", API.href('closer-compiler'));
+    console.info("API.hrefAuth('closer-compiler')", API.hrefAuth('closer-compiler'));//*/
 
     // Closer Compiler UI (JShrink on Linux)
     Remote.scripts('ace-builds/src-noconflict/ace.js','jquery.upload/min-index_0.0.2.js', function(){
 
-        // Load template and add the Minify toolbox to the toolbar
-        Remote.template('closure-compiler/app/template.html', function(template){
+        // Load the template and then load the Minify bar
+        Remote.template('jquery.bar/templates/Minify.template.html',
+                function(template){
+
             // template
             $('body').append(template);
 
@@ -19,9 +48,12 @@
                 if(parseInt($.fn.jquery) > 1) Minify.toolbar.toolbox = data;
                 else Minify.toolbar.toolbox = JSON.parse(data);
 
-                // Bar
+                // add the Minify toolbox to the toolbar
                 Minify.toolbar.toolbox.App = Minify;
                 $('#header').bar(Minify.toolbar);
+
+                Minify.uploader.API = Minify.API;
+                Minify.uploader.url = Minify.API.href('closure_compiler');
 
                 // File Uploader
                 $('#file-upload').uploader(Minify.uploader);
@@ -102,14 +134,20 @@
         callback: function(bar){
             // Hash Routes
             //-----------------------------------------------------------------
+
+            // upload js script (click event)
             bar.$bar.find('a[href="#Minify/upload"]').click(function(hash){
                 $('#file-upload').find('input').first().click();
+
+                // cancel location hash change
                 return false;
             });
 
-            // upload js script
+            // upload js script (route event)
             Frontgate.router.on('#Minify/upload', function(hash){
                 $('#file-upload').find('input').first().click();
+
+                // restore hash
                 location.hash = "Minify";
             });
 
@@ -148,8 +186,12 @@
 
             // compile code
             Frontgate.router.on('#Minify/compile', function(hash){
+                // Minify controller auth
+                $.ajaxSetup({ beforeSend: Minify.API.xhrAuth() });
+
+                // Minify controller (API) call
                 $.ajax({
-                    url: Situs.href('/closure_compiler/compile'),
+                    url: Minify.API.href('/closure_compiler/compile'),
                     type: "POST",
                     data: editor.getValue(),
                     success: function (res){
@@ -163,11 +205,16 @@
                         location.hash = 'Minify/minified';
                         $('#download-file').show();
 
-                        var file = Situs.hrefAuth('/download/min-' +  res.file);
+                        var file = Minify.API.hrefAuth('/download/min-' +  res.file);
                         document.getElementById("download-file")
                             .setAttribute('href', file);
                     }
                 });
+
+                // restore user auth
+                $.ajaxSetup({ beforeSend: Frontgate.xhrAuth() });
+
+                // restore hash
                 location.hash = "Minify";
             });
 
@@ -218,15 +265,18 @@
 
     uploader: {
         validate: function(file){
-            //console.log(file.type);
-            //console.log(file.name);
-            //console.log(file.lastModifiedDate);
+            //console.info('uploader', this);
+            //console.info('uploader validate', arguments);
+
+            // Closure Compiler auth
+            $.ajaxSetup({ beforeSend: this.API.xhrAuth() });
+
             var info = function(text, cssClass, t) {
                 text = text || '';
                 if(!text){
                     $('#closer-compiler-myUI')
                         .attr({
-                            title: 'Closer Compiler UI '+VERSION,
+                            title: 'Closer Compiler UI',
                             'class': 'toolbar-item'
                         });
                     return;
@@ -269,10 +319,18 @@
             return true;
         },
 
-        url: Situs.href('/closure_compiler'),
+        //TODO ?
+        //beforeSend: Frontgate.xhrAuth("guest", "guest"),
+        //url: Situs.hrefAuth('/closure_compiler'),
+
+        //
         success: function (res){
             // json parsing not required with jquery 2.0.0
             if(parseInt($.fn.jquery) < 2) res = JSON.parse(res);
+
+//TODO Remote -> remote location from html header (to replace Situs)
+            // restore user auth
+            $.ajaxSetup({ beforeSend: Frontgate.xhrAuth() });
 
             editor.setValue(res.input);
 
@@ -285,7 +343,10 @@
 
             $("#file-upload form input").val("");
 
-            var file = Situs.hrefAuth('/download/min-' + res.file);
+            //console.info('success',this,res);
+
+//TODO Remote -> remote location from html header (to replace Situs)
+            var file = Situs.href('/download/min-' + res.file);
             document.getElementById("download-file")
                 .setAttribute('href', file);
         }

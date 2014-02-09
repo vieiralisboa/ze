@@ -1,0 +1,61 @@
+<div id="closer-compiler">
+	<div id="code-container">
+		<div id="code-input"></div>
+		<textarea id="code-output" class="code" style="display: none"></textarea>
+	</div>
+	<style>
+	#closer-compiler{
+		border: none;
+		position: absolute;
+		width: 100%;
+		margin: auto;
+		bottom: 0;
+		top: 90px;
+		background-color: rgb(221,221,221);
+	}
+	#code-container {
+		text-align: center;
+		width: 100%;
+		padding: 0px;
+		margin: 0px;
+		border: none;/* solid red 1px;*/
+		background-color: transparent;
+	}
+	textarea{
+		-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+		-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+		box-sizing: border-box;         /* Opera/IE 8+ */
+		padding: 12px;
+		height: 480px;
+		width: 850px;
+	}
+	.code, #body{
+		/*
+		background-color: rgb(230,240,255);
+		*/
+	}
+	.code{
+		color: rgb(95,80,85);
+		background: none;
+		border: none;
+		font-family: Consolas, monospace;
+		font-size: 13px;
+		opacity: 0.9;
+		background-color: white;
+	}
+	#code-input{
+		text-align: LEFT;
+		-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+		-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+		box-sizing: border-box;         /* Opera/IE 8+ */
+		padding: 12px;
+		height: 480px;
+		width: 850px;
+		display: inline-block;
+		box-shadow: 0 0 10px rgba(0,0,0,.5);
+	}
+	#code-output{
+		color: rgb(34,128,34);
+	}
+	</style>
+</div>
