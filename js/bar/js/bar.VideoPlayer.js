@@ -1,6 +1,27 @@
+//REQUIRES Frontgate
+
+Remote = window.Remote || new Frontgate.Location({
+    hostname: "xn--stio-vpa.pt",
+    protocol: "https:"
+});
+
+Situs = window.Situs || new Frontgate.Location({
+    hostname: "situs.xn--stio-vpa.pt",
+    protocol: "https:"
+});
+
 Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
 
 (function(myTV){
+
+    // myTV controller
+    myTV.API = new Frontgate.Location({
+        hostname: "situs.xn--stio-vpa.pt",
+        protocol: "https:"//,pathname: "/myTV"
+    });
+
+    myTV.API.auth(Frontgate.attr());
+
     Frontgate.Apps("myTV", myTV);
 
     //1. load templates
@@ -28,10 +49,10 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
 
     //3. Event lsteners
     //-------------------------------------------------------------------------
-    
+
     // video metadata
     myTV.video.addEventListener('loadedmetadata', myTV.loadedMetadata, false); 
-    
+
     // video end 
     myTV.video.addEventListener('ended', function() {
         myTV.stop(this);
@@ -67,10 +88,16 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         else myTV.videoPanel.$header.find('li[data-control=HD]').addClass('hidden');
     });
     
+    //TODO Situs -> Remote
+/*
     Situs.subscribeEvent('userChange', function(user){
+*/
+    Frontgate.subscribeEvent('userChange', function(user){
+        //console.info("user", user);
+        myTV.API.auth(user);
         myTV.auth(function(result, auth){
             myTV.updateToolboxItems(auth, user);
-        });    
+        });
     });
 
     //4. Routes
@@ -271,7 +298,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         if(src.match(/^http/i)){
         }           
         else if(src.match(/^show/i)){
-            src = Situs.hrefAuth('/myTV/') + src;
+            src = this.API.hrefAuth('/myTV/') + src;
         } 
         else return;
         
@@ -320,8 +347,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         
         var self = this;
         
-        console.info("getVideoList", url);
-
+        //console.info("getVideoList", url);
 
         $.ajax({
             type: "GET",
@@ -372,6 +398,8 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     selectEPG: function(EPG, href){ 
         // show EPG panel
         this.togglePanel($("#epg-panel"));
+
+        //console.info("loadEPG:", arguments);
         
         // toogle playlist
         if(this.selectEPG[EPG]) this.toggleEPG(EPG);
@@ -389,6 +417,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     //-------------------------------------------------------------------------
     loadEPG: function(EPG, href){
         var self = this;
+
         this.getVideoList(href, function(list){ 
             var shows = [];
             if(list.length) {
@@ -468,30 +497,32 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     
     // adds a playlist button to the toolbox
     playList: function(playlist){
+        var cssClass = playlist.url.match(/myTV/)? 'private-playlist': 
+                    'public-playlist';
+
         var data = {
             text: playlist.name,
             css: {},
             attr: {
                 'data-toggle': 'playlist',
-                'class': playlist.url.match(/myTV/)? 'private-playlist': 
-                    'public-playlist',
+                'class': cssClass,
                 href: '#VideoPlayer/EPG/' + playlist.EPG,
                 title: playlist.title
             },
             click: function(){
-                if(!$("#epg-panel").is(":visible") 
-                    && location.hash == '#VideoPlayer/EPG/' + playlist.EPG)
-                        $("#epg-panel").fadeIn();
+                if(!$("#epg-panel").is(":visible")
+                        && location.hash == '#VideoPlayer/EPG/' + playlist.EPG)
+                    $("#epg-panel").fadeIn();
             }
         };
 
-        if(this.status != "Authorized" 
-            && data.attr['class'] == 'private-playlist')
+        if(this.status != "Authorized" && data.attr['class'] == 'private-playlist')
             data.css.display = "none";
 
         Frontgate.Apps("VideoPlayer").bar.toolbox.item(data);
 
-        this.EPG[playlist.EPG] = Remote.href(playlist.url);
+        this.EPG[playlist.EPG] = cssClass == 'public-playlist'? 
+            Remote.href(playlist.url) : this.API.href(playlist.url);
     },
 
     // EPG list item Constructor
@@ -720,7 +751,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
             var hash = '#'; 
             hash += video.src.replace(/\w+\:\w+\@/, '');
             hash += '&' + Math.floor(video.currentTime);
-            var url = Remote.href("jquery.toolbar.videoPlayer/popup.html") + hash;
+            var url = Remote.href("jquery.bar/templates/popup.html") + hash;
         }
  
         this.stop();
@@ -838,11 +869,15 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
 
     auth: function(callback){
         var self = this;
+
+        //TODO set myTV auth
+        $.ajaxSetup({ beforeSend: this.API.xhrAuth() });
+
         $.ajax({
             type: "GET",
             contentType: "application/json",
             dataType: "text",//"json",//
-            url: Situs.href('myTV/auth'),
+            url: self.API.href('myTV/auth'),
             crossDomain: true,
             error: function(xhr, result, data){
                 self.status = data;//unauthorized
@@ -853,6 +888,10 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
                 if(callback) callback(result, self.status);
             }
         });
+
+        //TODO restore user auth
+        $.ajaxSetup({ beforeSend: Frontgate.xhrAuth() });
+
     },
     
     toolbar: {
