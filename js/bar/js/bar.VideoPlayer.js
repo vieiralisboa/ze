@@ -298,7 +298,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         if(src.match(/^http/i)){
         }           
         else if(src.match(/^show/i)){
-            src = this.API.hrefAuth('/myTV/') + src;
+            src = this.API.href('/myTV/') + src;
         } 
         else return;
         
