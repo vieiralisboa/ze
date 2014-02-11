@@ -1,11 +1,11 @@
 // Requires Frontgate, jQuery Uploader plugin, closure_compiler controller
 
-Remote = window.Remote || new Frontgate.Location({
+Remote = window.Remote || Frontgate.location({
     hostname: "xn--stio-vpa.pt",
     protocol: "https:"
 });
 
-Situs = window.Situs || new Frontgate.Location({
+Situs = window.Situs || Frontgate.location({
     hostname: "situs.xn--stio-vpa.pt",
     protocol: "https:"
 });
@@ -14,7 +14,7 @@ Situs = window.Situs || new Frontgate.Location({
 
 (function(Minify) {
 
-    Minify.API = new Frontgate.Location({
+    Minify.API = Frontgate.location({
         hostname: "situs.xn--stio-vpa.pt",
         protocol: "https:"//,pathname: "/closer-compiler"
     });
@@ -94,7 +94,7 @@ Situs = window.Situs || new Frontgate.Location({
 })
 ({
     name: "Minify",
-    version: [0, 3, 0],
+    version: [0, 3, 1],
     json: Remote.href("jquery.bar/js/bar.Minify.json"),
 
     panelToggle: function(toggle){
