@@ -1,11 +1,11 @@
 //REQUIRES Frontgate
 
-Remote = window.Remote || new Frontgate.Location({
+Remote = window.Remote || Frontgate.location({
     hostname: "xn--stio-vpa.pt",
     protocol: "https:"
 });
 
-Situs = window.Situs || new Frontgate.Location({
+Situs = window.Situs || Frontgate.location({
     hostname: "situs.xn--stio-vpa.pt",
     protocol: "https:"
 });
@@ -15,7 +15,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
 (function(myTV){
 
     // myTV controller
-    myTV.API = new Frontgate.Location({
+    myTV.API = Frontgate.location({
         hostname: "situs.xn--stio-vpa.pt",
         protocol: "https:"//,pathname: "/myTV"
     });
@@ -112,6 +112,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     });//*/
     // add myBookLive playlist
     Frontgate.router.on(myTV.hash('myBookLive/:folder'), function(hash){
+        console.info(hash);
         myTV.myBookLiveTV(hash.attr.folder);
     });//*/
     // EPG (playlist) toggle
@@ -126,7 +127,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         $('#video-show-input').click();
     });//*/
 })({
-    version: [0,6,1],
+    version: [0, 6, 2],
     appName: "Video Player",
     hash: function(route){
         var hash = '#' + this.appName.replace(" ", "") + "/" + route;
