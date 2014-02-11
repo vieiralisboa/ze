@@ -3,7 +3,7 @@
 (function(Bar){
 
     //TEMP
-    // to use situs controller
+    //TODO use situs controller local FILE
     var FILE = {
         name: "Bar",
         filename: "bar.js",
@@ -13,64 +13,84 @@
         url: "https://xn--stio-vpa.pt/jquery.bar/js/bar.js"
     };
 
+    Bar.API = window.Remote || Frontgate.location({
+        hostname: "xn--stio-vpa.pt",
+        protocol: "https:"
+    });
+
     window.Bar = Bar;
 
-    $.fn.bar = function(data){
-        if(!data){
+    if (window.Ze && typeof Ze.bar == "undefined") {
+        Ze.bar = Bar;
+    }
+
+    $.fn.bar = function(data) {
+        if (!data) {
             console.error("Bar requires data");
             return this;
         }
 
-        if(!this.length){
-            //console.error("missing container for the toolbar");
-            if(!this.selector.match(/^\#/)) return this;
+        if (!this.length) {
+            console.error("missing container for the bar");
+            if(!this.selector.match(/^\#/)) {
+                return this;
+            }
             //console.log("Bar will create the container", this.selector);
         }
 
+        var index, bar, app;
+
         // Existing bar
         if(this.hasClass('bar-container')){
-            console.log("element is already a bar", this);
+            //console.log("element is already a bar", this);
 
             // The toolbar index
-            var index = this.find('.bar').first().attr('data-bar');
+            index = this.find('.bar').first().attr('data-bar');
 
             // get the Bar instance
-            var bar = Bar.bars[parseInt(index)];
-
-            //var bar = Bar.bars[parseInt(barIndex)];
+            bar = Bar.bars[parseInt(index)];
 
             // append toolbar items
-            if(data.items) bar.items(data.items);
-            //bar.toolbar.items(data.items);
+            if (data.items) {
+                bar.items(data.items);
+            }
 
             // no toolbox
-            if(!data.toolbox){
-                if(data.callback) data.callback(bar);
+            if (!data.toolbox) {
+                if(data.callback) {
+                    data.callback(bar);
+                }
                 return this;
             }
 
-            if(!data.toolbox.name) throw "a toolbox name is required";
+            if (!data.toolbox.name) {
+                throw "a toolbox name is required";
+            }
 
-            //!BAR ONLY CREATES NEW TOOLBOXES!
+            // !BAR ONLY CREATES NEW TOOLBOXES!
+            // use the bar object or callback to add items to the toolbox
 
-            // existing toolbox
-            var index = Bar.names(data.toolbox.name)['data-b64'];
-            if(Bar.app[index]){
-                console.log(data.toolbox.name, "toolbox is already set");
-                //console.info("use the toolbox bar or callback to add items");
+            // toolbox bar index
+            index = Bar.names(data.toolbox.name)['data-b64'];
 
-                if(data.toolbox.items) {
+            // the toolbox exists
+            if (Bar.app[index]) {
+                //console.log(data.toolbox.name, "toolbox is already set");
+
+                if (data.toolbox.items) {
                     Bar.app[index].toolbox.items(data.toolbox.items);
                 }
 
-                if(data.callback) data.callback(Bar.app[index]);
+                if (data.callback) {
+                    data.callback(Bar.app[index]);
+                }
+
                 return this;
             }
 
             // new toolbox and callback
-            if(Bar.toolbox(bar, data.toolbox) && data.callback) {
+            if (Bar.toolbox(bar, data.toolbox) && data.callback) {
                 data.callback(bar, data);
-                //data.callback(bar);
             }
 
             // keep chainning
@@ -78,38 +98,47 @@
         }
 
         // new toolbar
-        var bar = Bar.toolbar(this, data);
+        bar = Bar.toolbar(this, data);
 
         // new toolbox
-        if(data.toolbox) var app = Bar.toolbox(bar, data.toolbox);
+        if(data.toolbox) {
+            app = Bar.toolbox(bar, data.toolbox);
+        }
 
         // callback
-        if(data.callback) data.callback(app || bar, data);
+        if (data.callback) {
+            data.callback(app || bar, data);
+        }
 
         // keep chainning jQuery
         return $(this.selector);
     };
 
+    // load stylesheet
     //Bar.styles.load(FILE.host);
 
     // start auto loading bars
     //Bar.autoLoad.start();
 
-    console.info(Bar.name, Bar.version.join('.'));
+    if (window.console && console.info) {
+        console.info(Bar.name, Bar.version.join('.'));
+    }
 })
 ({
     name: 'Bar',
-    version: [0, 7, 0],
+    version: [0, 7, 1],
     bars: [],
 
-    bar: function($bar){
+    bar: function($bar) {
         var index = $bar.find(".bar").first().attr("data-bar");
-        if(this.bars[index]) return this.bars[index];
+        if (this.bars[index]) {
+            return this.bars[index];
+        }
     },
 
     // toolbar creates toolbars
     //-------------------------------------------------------------------------
-    toolbar: function($container, data){
+    toolbar: function($container, data) {
         // create a container for unmatched bar selector (id is required)
         if(!$container.length){
             $container = $('<div>').attr('id',
@@ -132,7 +161,9 @@
         }
 
         // add toolbar items
-        if(data.items) this.bars[index].items(data.items);
+        if(data.items) {
+            this.bars[index].items(data.items);
+        }
 
         // return the new toolbar
         return this.bars[index];
@@ -140,7 +171,7 @@
 
     // navigator creates the toolbox (tabs) navigator
     //-------------------------------------------------------------------------
-    navigator: function(toolbar){
+    navigator: function(toolbar) {
         // the navigator index
         var index = this.bars.length;
 
@@ -204,10 +235,12 @@
     // creates toolboxes
     //-------------------------------------------------------------------------
     toolbox: function(bar, data){
-        if(!data.name) throw 'toolbox name is required';
+        if (!data.name) {
+            throw 'toolbox name is required';
+        }
 
         // add navigator to toolbar
-        if(!bar.$bar.find('.navigator').length){
+        if (!bar.$bar.find('.navigator').length) {
             this.navigator(bar);
         }
 
@@ -215,15 +248,19 @@
         var navIndex = bar.$bar.find('.navigator').attr('data-bar');
         //alert(navIndex);
 
-        if(typeof navIndex == 'undefined') throw "failed to create navigator";
+        if(typeof navIndex == 'undefined') {
+            throw "failed to create navigator";
+        }
+
+        var i, index, app;
 
         // create toolbox
-        var index = this.bars.length;
+        index = this.bars.length;
         this.bars[index] = new this.Bar;
         this.bars[index].$bar.attr('data-bar', index).addClass('toolbox');
 
         // bar set
-        var app = this.names(data.name);
+        app = this.names(data.name);
         _.extend(app, {
             toolbar: bar,
             toolbox: this.bars[index],
@@ -236,24 +273,26 @@
         this.app(app);
 
         // validate item data.validate
-        if(data.validate) {
+        if (data.validate) {
             this.bars[index].subscribeEvent("addItem", data.validate);
         }
 
         // add items to the toolbox
-        if(data.items) app.toolbox.items(data.items);
+        if (data.items) {
+            app.toolbox.items(data.items);
+        }
 
         // Navigator tab
         this.navigatorTab(app);
 
         // store App
-        if(data.App){
+        if (data.App) {
             data.App.bar = app;
             Frontgate.Apps(app['data-name'], data.App);
         }
 
-        if(data.on){
-            for(var i in data.on) {
+        if (data.on) {
+            for (i in data.on) {
                 app.toolbox.subscribeEvent(i, data.on[i]);
             }
         }
@@ -287,10 +326,16 @@
         // append items
         this.items = function(items){
             // getter (no argumnts)
-            if(!items) return _items_;//$ul.find('.toolbar-item');
+            if(!items) {
+                return _items_;//$ul.find('.toolbar-item');
+            }
+
+            var i;
 
             // setter
-            for(var i in items) this.item( items[i] );
+            for(i in items) {
+                this.item( items[i] );
+            }
 
             // chainning
             return this;
@@ -304,8 +349,12 @@
             // item container
             this.$li = $('<li>').addClass('bar-item');
 
-            if(data.el) this.$el = $('<'+data.el+'>');
-            else this.$el = $('<a>');
+            if (data.el) {
+                this.$el = $('<'+data.el+'>');
+            }
+            else {
+                this.$el = $('<a>');
+            }
 
             _.extend(attr, data);
             Frontgate.set(this.$el, attr);
@@ -325,13 +374,13 @@
     // Name parses toolbox name
     //-------------------------------------------------------------------------
     names: function(name){
-        var lowerCase = name.toLowerCase();
-        var parts = lowerCase.split(" ");
-        var toolboxName = '';
+        var lowerCase = name.toLowerCase(),
+            parts = lowerCase.split(" "),
+            toolboxName = '',
+            i, part;
 
-        for(var i in parts){
-            var part = parts[i];
-            toolboxName += part.charAt(0).toUpperCase() + part.slice(1);
+        for(i in parts){
+            toolboxName += parts[i].charAt(0).toUpperCase() + parts[i].slice(1);
         }
 
         return {
@@ -346,7 +395,7 @@
     // Bar Url parses bar (toolbox) URL
     //-------------------------------------------------------------------------
     urls: function(url){
-        if(!url){
+        if (!url) {
             console.error({
                 method: "url",
                 error: 'bad url',
@@ -357,7 +406,7 @@
 
         var match = url.match(/^\#(\!)?([\w\-\u00C0-\u00ff]*)$/);
 
-        if(match) return  {
+        if (match) return  {
             name: match[2],
             //"jquery.bar/js/bar." + match[2] + ".js",
             script: "situs/js/bar?%bar%".replace("%bar%", match[2]),
@@ -366,14 +415,16 @@
         };
 
         //url.match(/^jquery.bar\/js\/bar\.([\w\-\_\é\á\í\ó]*)\.js$/i);
-        var match = url.match(/^situs\/js\/bar\?([\w\-\u00C0-\u00ff]*)$/i);
+        match = url.match(/^situs\/js\/bar\?([\w\-\u00C0-\u00ff]*)$/i);
 
-        if(match) return {
-            name: match[1],
-            script: match.input,
-            hash: "#!%bar%".replace("%bar%", match[1]),
-            match: match
-        };
+        if (match) {
+            return {
+                name: match[1],
+                script: match.input,
+                hash: "#!%bar%".replace("%bar%", match[1]),
+                match: match
+            };
+        }
 
         return false;
     },
@@ -381,26 +432,33 @@
     alias: function(aliasName, appName){
         //TODO set router alias
 
-        if(typeof appName == "string"){
-            var index = Frontgate.b64(appName);
-            var aliasIndex = Frontgate.b64(aliasName);
+        if (typeof appName == "string") {
+            var index = Frontgate.b64(appName),
+                aliasIndex = Frontgate.b64(aliasName);
 
-            if(this.app[index]){
+            if (this.app[index]) {
                 this.app[aliasIndex] = this.app[index];
                 Frontgate.Apps(aliasName, Frontgate.Apps(appName));
                 return this.app[index];
             }
-            else throw "no such app " + appName;
+            else {
+                throw "no such app " + appName;
+            }
+
             return false;
         }
+
+        return false;
     },
 
     // Addon helper
     //-------------------------------------------------------------------------
     app: function(app){
-        if(typeof app == "string"){
+        if (typeof app == "string") {
             var index = Frontgate.b64(app);
-            if(this.app[index]) return this.app[index];
+            if (this.app[index]) {
+                return this.app[index];
+            }
         }
 
         if(this.app[app['data-b64']]) {
@@ -417,7 +475,7 @@
         jsonFile = jsonFile || BAR_JSON;// BAR_JSON from Situs controller
         //appName = appName || BAR_NAME;// BAR_NAME from Situs controller
 
-        $.get(Remote.href(jsonFile), function(data){
+        $.get(this.API.href(jsonFile), function(data){
             data = parseInt($.fn.jquery) > 1 ? data : JSON.parse(data);
 
             //TODO use BAR_NAME to reference Addon
@@ -450,6 +508,7 @@
                 error: "bad url",
                 url: urls.script
             });
+
             return false;
         }
 
@@ -457,18 +516,24 @@
         var b64 = Frontgate.b64(urls.name);
 
         // bar[<urls.b64>] the app is set (the script already loaded)
-        if( Bar.app[b64] ){
+        if ( Bar.app[b64] ) {
             // select the toolbox tab
             location.hash = Bar.app[b64].href;
 
-            if(callback) callback(false, this.app[b64]);
+            if (callback) {
+                callback(false, this.app[b64]);
+            }
         }
-        else{
+        else {
             // load required script 'bar/js/bar.<toolbox.name>.js'
             var script = this.autoLoad.location.href(urls.script);
             $.getScript(script, function(data, textStatus, jqxhr){
-                if(textStatus != "success") throw "error loading " + script;
-                if(callback) callback(data, textStatus, jqxhr);
+                if (textStatus != "success") {
+                    throw "error loading " + script;
+                }
+                if (callback) {
+                    callback(data, textStatus, jqxhr);
+                }
             });
         }
 
@@ -484,10 +549,14 @@
 
         // starts auto loading bars
         start: function(location){
-            if(this.started) return false;
+            if(this.started) {
+                return false;
+            }
 
             // auto load requires Frontgate
-            if(!Frontgate) return false;
+            if(!Frontgate) {
+                return false;
+            }
 
             this.started = true;
 
@@ -496,18 +565,17 @@
 
             // set onNotFound route event handler
             Frontgate.router.onNotFound = function(hash, base, route, callback){
-
                 // load bar (toolbar addon) from script
                 Bar.getBar(Bar.urls(hash), function(error, app){
                     // select addon tab
-                    if(!error && app && app.href){
+                    if (!error && app && app.href) {
                         Frontgate.router.route(app.href);
                         //console.info("getBar", app);
                     }
 
                     //else console.error("error getBar", hash);
 
-                    if(typeof callback == 'function'){
+                    if (typeof callback == 'function') {
                         callback(hash, base, route, app||0);
                     }
                 });
@@ -536,9 +604,12 @@
     },
 
     route: function(hash, callback){
-        if(this.autoLoad.started)
+        if (this.autoLoad.started) {
             Frontgate.router.route(hash, callback);
-        else throw "AutoLoad is disabled";
+        }
+        else {
+            throw "AutoLoad is disabled";
+        }
 
         //Bar.getBar(Bar.urls(hash), callback);
 
