@@ -17,10 +17,11 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     // myTV controller
     myTV.API = Frontgate.location({
         hostname: "situs.xn--stio-vpa.pt",
-        protocol: "https:"//,pathname: "/myTV"
+        protocol: "https:",
+        pathname: "/myTV"
     });
 
-    myTV.API.auth(Frontgate.attr());
+    myTV.API.auth(Frontgate.basicAuth());
 
     Frontgate.Apps("myTV", myTV);
 
@@ -40,7 +41,9 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
             myTV.updateToolboxItems(data);
         });
 
-        if(console && console.info) console.info(myTV.appName, myTV.version.join("."));
+        if(console && console.info) {
+            console.info(myTV.appName, myTV.version.join("."));
+        }
 
         // File Input Change
         document.querySelector('#video-show-input')
@@ -51,57 +54,59 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     //-------------------------------------------------------------------------
 
     // video metadata
-    myTV.video.addEventListener('loadedmetadata', myTV.loadedMetadata, false); 
+    myTV.video.addEventListener('loadedmetadata', myTV.loadedMetadata, false);
 
-    // video end 
+    // video end
     myTV.video.addEventListener('ended', function() {
         myTV.stop(this);
         myTV.info('');
         myTV.log('Video Show Ended');
     }, false);
-    
+
     // window unload
     $(window).bind('unload', function () {
         //TODO save video size, EPG, etc... to restore onload
         myTV.saveCurrentTime(myTV.video);
     });
-    
+
     // subscribe to video panel 'hide' event
     myTV.videoPanel.subscribeEvent('hide', function(){
         $('#myTV-icon').addClass('disabled');
     });
-    
+
     // subscribe to video panel 'show' event
     myTV.videoPanel.subscribeEvent('show', function(){
          $('#myTV-icon').removeClass('disabled');
-    }); 
-    
+    });
+
     // before setting video to play
     myTV.videoPanel.subscribeEvent('beforePlay', function(attr){// <this> is this function
-        // save current time before changing video.src    
+        // save current time before changing video.src
         myTV.saveCurrentTime(myTV.video);
         myTV.unselectShow();
         myTV.video.pause();
 
-        if(attr['data-m4v'] == 'true') myTV.videoPanel.$header.find('li[data-control=HD]')
-            .removeClass('hidden');
-        else myTV.videoPanel.$header.find('li[data-control=HD]').addClass('hidden');
+        if(attr['data-m4v'] == 'true') {
+            myTV.videoPanel.$header.find('li[data-control=HD]')
+                .removeClass('hidden');
+        }
+        else {
+            myTV.videoPanel.$header.find('li[data-control=HD]')
+                .addClass('hidden');
+        }
     });
-    
+
     //TODO Situs -> Remote
-/*
-    Situs.subscribeEvent('userChange', function(user){
-*/
-    Frontgate.subscribeEvent('userChange', function(user){
+    Frontgate.subscribeEvent('userchange', function(credentials){
         //console.info("user", user);
-        myTV.API.auth(user);
+        myTV.API.auth(credentials);//TODO pass auth string only
         myTV.auth(function(result, auth){
-            myTV.updateToolboxItems(auth, user);
+            myTV.updateToolboxItems(auth, credentials);
         });
     });
 
     //4. Routes
-    //-------------------------------------------------------------------------  
+    //-------------------------------------------------------------------------
     // remote video
     Frontgate.router.on(myTV.hash('show/:folder/:video'), function(hash){
         myTV.selectShow($("a.video-show[href='" + hash.res[0] + "']").get(0));
@@ -109,25 +114,25 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     //TEST internet location
     Frontgate.router.on(myTV.hash('http:/:url'), function(hash){
         myTV.selectShow($("a.video-show[href='" + hash.res[0] + "']").get(0));
-    });//*/
+    });
     // add myBookLive playlist
     Frontgate.router.on(myTV.hash('myBookLive/:folder'), function(hash){
         console.info(hash);
         myTV.myBookLiveTV(hash.attr.folder);
-    });//*/
+    });
     // EPG (playlist) toggle
     Frontgate.router.on(myTV.hash('EPG/:EPG'), function(hash){
         myTV.selectEPG(hash.attr.EPG, myTV.EPG[hash.attr.EPG]);
-    });//*/
-    
-    /*/ 
+    });
+
+    /*/
     Frontgate.router.on('#myTV/browse', function(hash){
         //console.log('#myTV/browse', hash);
         console.log('INPUT', $('#video-show-input'));
         $('#video-show-input').click();
     });//*/
 })({
-    version: [0, 6, 2],
+    version: [0, 6, 3],
     appName: "Video Player",
     hash: function(route){
         var hash = '#' + this.appName.replace(" ", "") + "/" + route;
@@ -145,11 +150,11 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
 
     // Save current video position
     //-------------------------------------------------------------------------
-    saveCurrentTime: function(){        
+    saveCurrentTime: function(){
         // current playing video link
         var $el = $("a.video-show[data-src='"+$(this.video).attr('data-src')+"']");
-        
-        // link not found 
+
+        // link not found
         if(!$el.length) return;
         
         var time = Math.floor(this.video.currentTime),// current video time
@@ -178,7 +183,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     play: function(attr, callback){
         // Publish beforePlay event
         this.videoPanel.publishEvent('beforePlay', attr);
-        
+
         // set the video attributes
         var videoAttr = new this.VideoData(attr);
         if(videoAttr) $(this.video).attr(videoAttr);
@@ -201,8 +206,10 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
 
         //TODO verify video result
         // Callback
-        if(callback) callback('result', this);      
-        
+        if(callback) {
+            callback('result', this);
+        }
+
         // play
         this.videoPanel.publishEvent('play');
         this.video.play();
@@ -211,15 +218,15 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     // video attributes Constructor
     //-------------------------------------------------------------------------
     VideoData: function(data){
-        if(data.src.match(/.mp4$/i) 
-            || data.src.match(/.m4v$/i) 
+        if(data.src.match(/.mp4$/i)
+            || data.src.match(/.m4v$/i)
             || data.src.match(/^blob/i) ) this.src = data.src;
         else this.src = data.src + '.mp4' || '';
 
         this['data-id'] = data['data-id'] || 0;
         this['data-EPG'] = data['data-EPG'] || '';
         this['data-name'] = data['data-name'] || '';
-        this['data-vtt'] = data['data-vtt'] || false; 
+        this['data-vtt'] = data['data-vtt'] || false;
         this['data-time']  = data['data-time'] || 0;
         this['data-src'] = data['data-src'] || '';
         this['data-hd'] = data['data-m4v'] || false;
@@ -299,7 +306,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         if(src.match(/^http/i)){
         }           
         else if(src.match(/^show/i)){
-            src = this.API.href('/myTV/') + src;
+            src = this.API.hrefAuth(src);
         } 
         else return;
         
@@ -342,7 +349,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
 
     // Video listing from the server
     //-------------------------------------------------------------------------
-    getVideoList: function(url, callback){      
+    getVideoList: function(url, callback){
         // ajax screen
         $('#epg-blocker').css('cursor','wait').fadeIn();
         
@@ -361,7 +368,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
                 callback([]);
                 self.info("videoList: Ajax error (" + url + ")", 'error', 10000);
             },
-            success: function(list){       
+            success: function(list){
                 callback(list);
                 
                 // ajax screen
@@ -386,17 +393,17 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     autoPlayEPG: function(EPG){
         // a video is already playing
         if(this.video.currentTime != 0) return;
-        
+
         // there's no video src in storage
         if(!localStorage.getItem('last'+EPG+'Src')) return;
         
         this.selectShow($('.video-show[data-name="'
-            + this.localStorage.getItem('last'+EPG+'Name') +'"]').get(0)); 
+            + this.localStorage.getItem('last'+EPG+'Name') +'"]').get(0));
     },
 
     // Select EPG playList
     //-------------------------------------------------------------------------
-    selectEPG: function(EPG, href){ 
+    selectEPG: function(EPG, href){
         // show EPG panel
         this.togglePanel($("#epg-panel"));
 
@@ -419,12 +426,12 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     loadEPG: function(EPG, href){
         var self = this;
 
-        this.getVideoList(href, function(list){ 
+        this.getVideoList(href, function(list){
             var shows = [];
             if(list.length) {
                 for(var i in list) {
                     shows.push(new self.Show(list[i]));
-                }   
+                }
             }
             self.selectEPG[EPG] = self.makeEPG(EPG, shows);
             self.toggleEPG(EPG);
@@ -438,11 +445,11 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
             return $('<ol>').addClass('epg-list')
                 .html('<i>' + EPG + '</i><br>Not Available')
                 .appendTo('#epg-panel');
-        } 
+        }
 
         this.listing = this.listing || {};
-        
-        // get saved (show) time positions 
+
+        // get saved (show) time positions
         this.listing[EPG] = $.parseJSON(this.localStorage.getItem(EPG)) || {};
         
         // delete shows no longer in the list
@@ -474,14 +481,14 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
             })(list[n].name);
 
             list[n].show = show.show;
-            list[n].episode = null,//show.episode;
+            list[n].episode = null,
             list[n].S = show.S;
             list[n].E = show.E;
         }
-            
+
         // ol list from template
         var $list =  $(_.template(this.templates.ol, {
-            Listing: this.listing[EPG],          
+            Listing: this.listing[EPG],
             href: this.hash("/"),
             EPG: EPG,
             items: list
@@ -492,13 +499,13 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
 
         return $list;
     },
-    
+
     // EPG playlist urls
     EPG: {},
-    
+
     // adds a playlist button to the toolbox
     playList: function(playlist){
-        var cssClass = playlist.url.match(/myTV/)? 'private-playlist': 
+        var cssClass = playlist.url.match(/dir/)? 'private-playlist':
                     'public-playlist';
 
         var data = {
@@ -517,12 +524,14 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
             }
         };
 
-        if(this.status != "Authorized" && data.attr['class'] == 'private-playlist')
+        if(this.status != "Authorized"
+                && data.attr['class'] == 'private-playlist'){
             data.css.display = "none";
+        }
 
         Frontgate.Apps("VideoPlayer").bar.toolbox.item(data);
 
-        this.EPG[playlist.EPG] = cssClass == 'public-playlist'? 
+        this.EPG[playlist.EPG] = cssClass == 'public-playlist'?
             Remote.href(playlist.url) : this.API.href(playlist.url);
     },
 
@@ -536,7 +545,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         this.name = (function(text, length){
             if(!text) return 'N/A';
             length = length || 20;
-            if(text.length <= 2*length + 5) return text; 
+            if(text.length <= 2*length + 5) return text;
             var prefix = text.substring(0, length);
             var afix = text.substring(text.length-length)
             return prefix + '...' + afix;
@@ -544,18 +553,18 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         // Show Title
         this.title = show.name || 'N/A';
         // Show Subtitle vtt
-        this.vtt = show.vtt || false; 
+        this.vtt = show.vtt || false;
         this.cc = this.vtt ? true : false;
         this.m4v = show.m4v ? true : false;
     },
 
     // EPG Panel
     epgPanel: (function(){
-        $('#epg-panel').panel({ 
+        $('#epg-panel').panel({
             name: {
                 text: ''
             },
-            hide: true, 
+            hide: true,
             close: function(event){
                 $('button[data-toggle=playlist]').removeClass('selected');
                 Frontgate.Apps('myTV').epgPanel.toggle();
@@ -584,7 +593,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         //return $panel.get(0);
         return $.fn.panel.self.get('#epg-panel');
     })(),
-    
+
     // Video Panel
     videoPanel: (function(){
         $('#tv-panel').panel({
@@ -610,9 +619,9 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
             cancel: '#tv-panel-span video',
             controls: [{
                 text: 'File',
-                click: function(){ 
-                    $('#video-show-input').click(); 
-                }   
+                click: function(){
+                    $('#video-show-input').click();
+                }
             },
             {
                 //text: 'HD',
@@ -627,12 +636,12 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
                     display: 'none'
                 },
                 
-                attr: { 
+                attr: {
                     'data-control':'HD',
                     title: 'High Definition',
                     id: 'hd-icon'
                 },
-                
+
                 click: function(){
                     var videoPlayer = Frontgate.Apps('myTV');
 
@@ -645,7 +654,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
                         'data-src': $(videoPlayer.video).attr('data-src'),
                         'data-m4v': $(videoPlayer.video).attr('data-hd')
                     };
-                    
+
                     // EPG Panel and myTV are hidden
                     if($(this).hasClass('selected')){
                         $(this).removeClass('selected');
@@ -663,19 +672,19 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
                             videoPlayer.play(data);
                         }
                     }
-                }   
+                }
             },
             {
                 text: 'URL',
-                click: function(){    
+                click: function(){
                     var videoPlayer = Frontgate.Apps('myTV');
-                    var url = prompt('Please enter an URL to a video source:', 
+                    var url = prompt('Please enter an URL to a video source:',
                         'http://192.168.1.64:1234/stream.ogv');
 
                     if(!url.match(/^http:\/\//i)) return;
                     if(url.match(/\/\/www\.youtube\.com\//i)){//http://www.youtube.com/watch?feature=player_detailpage&v=oOgF7jUaYzY
                         //myTV.log('youtube video');
-                        
+
                         var v = url.match(/v=(.*)$/);
                         var src = 'http://www.youtube.com/embed/'+v[1]+'?html5=1';
                         videoPlayer.newWindow(src, 'TV');
@@ -683,19 +692,19 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
 
                     videoPlayer.saveCurrentTime(videoPlayer.video);
                     videoPlayer.setup({
-                        'data-EPG':'url', 
-                        'data-name':'', 
+                        'data-EPG':'url',
+                        'data-name':'',
                         'data-id':''
                     });
                     videoPlayer.video.src = url;
                     videoPlayer.video.play();
-                }  
+                }
             },
             {
                 text: 'Pop-up',
                 click: function(){
                     Frontgate.Apps('myTV').popup();
-                } 
+                }
             },
             {
                 text: 'Stop',
@@ -707,13 +716,13 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         .hover(function(){
             $(Frontgate.Apps('myTV').video).css('cursor','default');
             $(this).css({
-                cursor: 'move' 
-            }); 
-        }, 
-        function(){ 
+                cursor: 'move'
+            });
+        },
+        function(){
             $(this).css({ 
-                cursor: 'default' 
-            }); 
+                cursor: 'default'
+            });
         })
         .css({
             padding: 0
@@ -721,7 +730,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         .append('<span id="tv-panel-span" style="display: block;"></span>')
         .append('<span style="background-color: none;display: block; position: absolute; top:0; left: 0; right:0; height:100px;"></span>');
 
-        //TODO review $.fn.panel 
+        //TODO review $.fn.panel
         return $.fn.panel.self.get('#tv-panel');
     })(),
 
@@ -733,56 +742,56 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         // pop-up window|dialog,modal,fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,
         var newWindow = window.open(url, name, 'resizable=no, height=270, width=480');
         if (window.focus) newWindow.focus();
-    }, 
+    },
     
     // Video popup
-    popup: function(video){ 
+    popup: function(video){
         video = video || this.video;
         video.pause();
-        
+
         if($(video).attr('data-EPG') == 'file'){
             // pop-up window|dialog,modal,fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,
             newwindow = window.open(video.src, 'TV', 'resizable=no, height=405, width=720');
             if (window.focus) newwindow.focus();
             this.stop(video);
             return false;
-        } 
+        }
         else {
             //TODO include video name and current time in the hash
-            var hash = '#'; 
+            var hash = '#';
             hash += video.src.replace(/\w+\:\w+\@/, '');
             hash += '&' + Math.floor(video.currentTime);
             var url = Remote.href("jquery.bar/templates/popup.html") + hash;
         }
- 
+
         this.stop();
 
         // pop-up window|dialog,modal,fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,
         newwindow = window.open( url, 'TV', 'resizable=no, height=270, width=480');
         if (window.focus) newwindow.focus();
-        
+
         return false;
     },
-    
+
     // toggle video controls
     controlsToggle: function(video){
         video = video || this.video;
         video.controls = video.controls ? false : true;
     },
-    
+
     myBookLiveTV: function(folder){
         if(!folder || !folder.match(/^.*$/)) return false;
         var name = folder.replace(/\.S[0-9]+$/i, '');
-        
+
         name = name.replace(/\.+/g, ' ');
         
         var season = folder.match(/S([0-9]+)$/i);
         if(season) season = ' Season '+ parseInt(season[1]);
         else season = '';
-                
+
         //return data;
         this.playList({
-            url: '/myTV/dir/' + folder,
+            url: '/dir/' + folder,
             name: name,
             title: name + season,
             EPG: folder.replace(/\.+/g, '')
@@ -792,7 +801,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     playSelectedFile: function(event){
         var URL = window.URL || window.webkitURL;
         var file = this.files[0];
-        if(typeof file == 'undefined') return; 
+        if(typeof file == 'undefined') return;
 
         var videoPlayer = Frontgate.Apps('myTV');
         var type = file.type;
@@ -805,7 +814,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         videoPlayer.saveCurrentTime(videoPlayer.video);
         videoPlayer.setup({
             src: URL.createObjectURL(file),
-            'data-EPG':'file', 
+            'data-EPG':'file',
             'data-name':file.name
         });
         videoPlayer.video.play();
@@ -847,7 +856,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
 
             videoPlayer.videoPanel.$panel.topZIndex();
         }
-        
+
         //videoPlayer.log('onloadmetadata: playing '+this.src +' at '+videoPlayer.video.currentTime+'s');
 
         /*/var playing = decodeURIComponent(this.src).split('/');
@@ -861,7 +870,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         $playlists = Frontgate.Apps("VideoPlayer").bar.toolbox.$bar.find('a.private-playlist');
 
         if(!$playlists.length) console.error("failed to get playlists");
-        
+
         if(this.status == 'Authorized'){
             $playlists.css('display','block');
         }
@@ -871,27 +880,26 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     auth: function(callback){
         var self = this;
 
-        //TODO set myTV auth
-        $.ajaxSetup({ beforeSend: this.API.xhrAuth() });
+        // use Frontgate credentials to myTV auth
+        $.ajaxSetup({
+            beforeSend: Frontgate.xhrAuth()
+        });
 
         $.ajax({
             type: "GET",
             contentType: "application/json",
             dataType: "text",//"json",//
-            url: self.API.href('myTV/auth'),
+            url: self.API.href('auth'),
             crossDomain: true,
             error: function(xhr, result, data){
                 self.status = data;//unauthorized
                 if(callback) callback(result, data);
             },
-            success: function(data, result, xhr){       
+            success: function(data, result, xhr){
                 self.status =  JSON.parse(data);//"authorized"
                 if(callback) callback(result, self.status);
             }
         });
-
-        //TODO restore user auth
-        $.ajaxSetup({ beforeSend: Frontgate.xhrAuth() });
 
     },
     
@@ -914,8 +922,8 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
                     else VideoPlayer.video.pause();
                 }, e);
             }
-        }],     
-        
+        }],
+
         callback: function(toolbar){
             var VideoPlayer = Frontgate.Apps("myTV");
 
@@ -923,7 +931,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
                $('#video-show-input').click();
                return false;
             });
-            
+
             $('#myTV-icon').hide()
             .hover(function(){
                 $(this).attr("src", Remote.href('/graphics/icons/Icons/Icons/Movie_yellow.png'));
@@ -936,7 +944,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
                 "line-height": "32px",
                 opacity: .9
             });
-            
+
             // Playlists
             VideoPlayer.playList({
                 url: '/study/Movies/public-tv-AndyGriffithShow.json',
@@ -947,15 +955,15 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
 
             // Private playlists
             VideoPlayer.myBookLiveTV('Adventure.Time.S05');
-            VideoPlayer.myBookLiveTV('New');//*/
+            VideoPlayer.myBookLiveTV('New');
 
             var offset = $('#body div.bar').offset();
             $('#epg-panel, #tv-panel')
             .css("position", "absolute")
             .offset({
                 left: offset.left,
-                top: offset.top + 5  
+                top: offset.top + 5
             });
-        }      
+        }
     }
 });
