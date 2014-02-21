@@ -43,7 +43,7 @@ Situs = window.Situs || Frontgate.location({
             // Bar
             //Minify.toolbar.toolbox.App = Minify;
             //$('#header').bar(Minify.toolbar);
-            $.get(Minify.json, function(data){
+            $.ajax({ url: Minify.json, dataType: 'json', success: function(data){
                 // json parsing not required with jquery 2.0.0
                 if(parseInt($.fn.jquery) > 1) Minify.toolbar.toolbox = data;
                 else Minify.toolbar.toolbox = JSON.parse(data);
@@ -85,6 +85,7 @@ Situs = window.Situs || Frontgate.location({
 
                 // select code input
                 $('#uglify-view').click();
+            }
             });
         });
     });
