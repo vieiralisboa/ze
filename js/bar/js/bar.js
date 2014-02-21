@@ -14,7 +14,8 @@
     };
 
     Bar.API = window.Remote || Frontgate.location({
-        hostname: "xn--stio-vpa.pt",
+        hostname: "situs.xn--stio-vpa.pt",
+        pathname: "libs",
         protocol: "https:"
     });
 
@@ -473,18 +474,19 @@
     _requestHash: null,
     load: function(barSelector, callback, jsonFile, appName){
         jsonFile = jsonFile || BAR_JSON;// BAR_JSON from Situs controller
-        //appName = appName || BAR_NAME;// BAR_NAME from Situs controller
+        jsonFile = this.API.href(jsonFile);
 
-        $.get(this.API.href(jsonFile), function(data){
+        $.ajax({ url: jsonFile, dataType: 'json', success: function(data){
             data = parseInt($.fn.jquery) > 1 ? data : JSON.parse(data);
 
-            //TODO use BAR_NAME to reference Addon
-            // file name (BAR_NAME) must match name in json file to auto load from hash
+            //TODO use BAR_NAME (the file name) as reference to the bar Addon
+            // The file name must match the name in json file for it to
+            // auto load from the location hash.
             // 'Video Player' => '#VideoPlayer' => 'VideoPlayer.json'
             // 'myVideo' => '#Myvideo' => 'Myvideo.json'
 
             var toolbar = {
-                items:[],//TODO good way to pass the Toolbar items
+                items:[],//TODO a good way to pass the Toolbar items
                 toolbox: data,
                 callback: callback
             };
@@ -493,6 +495,7 @@
             data.App = toolbar;// Frontgate.Apps(app);
 
             $(barSelector).bar(toolbar);// => Frontgate.Apps(app, App);
+        }
         });
 
         delete window.BAR_JSON;
