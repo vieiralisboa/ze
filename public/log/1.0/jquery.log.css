@@ -1,0 +1,19 @@
+/*
+ * 	jQuery log plugin
+ */
+.log{
+font-family: monospace;	
+display: none;
+padding: 5px 10px 5px 10px;
+margin-bottom: 1px;
+background: white;
+opacity: 0.7;
+/*borderRadius: '5px'*/
+}
+.log:last-child{
+	background: rgb(240,254,129);
+}
+.log:hover{
+	background: rgb(250,205,255);
+}
+
