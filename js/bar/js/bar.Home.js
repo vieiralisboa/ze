@@ -47,7 +47,7 @@ Bar.load('#header', function(bar, data){
         if(attr.user == "daniel") $("#isec-ei").show();
         else $("#isec-ei").hide();
     });
-})
+});
 
 //------------------------------------------------------------------
 // BUG:

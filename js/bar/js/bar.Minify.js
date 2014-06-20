@@ -31,26 +31,19 @@ Situs = window.Situs || Frontgate.location({
     console.info("API.hrefAuth('closer-compiler')", API.hrefAuth('closer-compiler'));//*/
 
     // Closer Compiler UI (JShrink on Linux)
-    Remote.scripts('ace-builds/src-noconflict/ace.js','jquery.upload/min-index_0.0.2.js', function(){
+    Remote.scripts('ace-builds/src-noconflict/ace.js','docs/uploader/min-index_0.0.2.js', function(){
 
         // Load the template and then load the Minify bar
-        Remote.template('jquery.bar/templates/Minify.template.html',
-                function(template){
-
+        Remote.template('docs/bar/templates/Minify.template.html', function(template){
             // template
             $('body').append(template);
 
-            // Bar
-            //Minify.toolbar.toolbox.App = Minify;
-            //$('#header').bar(Minify.toolbar);
-            $.ajax({ url: Minify.json, dataType: 'json', success: function(data){
-                // json parsing not required with jquery 2.0.0
-                if(parseInt($.fn.jquery) > 1) Minify.toolbar.toolbox = data;
-                else Minify.toolbar.toolbox = JSON.parse(data);
-
-                // add the Minify toolbox to the toolbar
-                Minify.toolbar.toolbox.App = Minify;
+            // load Bar
+            Bar.load('#header', function(bar, data){
                 $('#header').bar(Minify.toolbar);
+
+                // add toolbox toggler
+                Frontgate.Apps("Minify").toolbox.App.panelToggle = Minify.panelToggle;
 
                 Minify.uploader.API = Minify.API;
                 Minify.uploader.url = Minify.API.href('closure_compiler');
@@ -62,11 +55,10 @@ Situs = window.Situs || Frontgate.location({
                 $('#file-upload form').css('display','inline');
 
                 // uploader input
-                $('#file-upload form input')
-                    .css({
-                        color: 'rgba(55,55,55,0.9)',
-                        'text-shadow': '0 0 3px rgb(255,255,255)'
-                    })
+                $('#file-upload form input').css({
+                    color: 'rgba(55,55,55,0.9)',
+                    'text-shadow': '0 0 3px rgb(255,255,255)'
+                })
                 .attr('accept', 'application/x-javascript');//, text/javascript
 
                 //TODO set css/attr in template
@@ -85,7 +77,6 @@ Situs = window.Situs || Frontgate.location({
 
                 // select code input
                 $('#uglify-view').click();
-            }
             });
         });
     });
@@ -95,11 +86,9 @@ Situs = window.Situs || Frontgate.location({
 })
 ({
     name: "Minify",
-    version: [0, 3, 1],
-    json: Remote.href("jquery.bar/js/bar.Minify.json"),
+    version: [0, 4, 0],
 
     panelToggle: function(toggle){
-        //TODO events
         if(toggle){
             $('#closer-compiler').fadeIn();
             $('#minify-icon').css('opacity','.9');
@@ -132,10 +121,11 @@ Situs = window.Situs || Frontgate.location({
                 return false;
             }
         }],
+
         callback: function(bar){
+
             // Hash Routes
             //-----------------------------------------------------------------
-
             // upload js script (click event)
             bar.$bar.find('a[href="#Minify/upload"]').click(function(hash){
                 $('#file-upload').find('input').first().click();
@@ -143,7 +133,6 @@ Situs = window.Situs || Frontgate.location({
                 // cancel location hash change
                 return false;
             });
-
             // upload js script (route event)
             Frontgate.router.on('#Minify/upload', function(hash){
                 $('#file-upload').find('input').first().click();
@@ -151,7 +140,6 @@ Situs = window.Situs || Frontgate.location({
                 // restore hash
                 location.hash = "Minify";
             });
-
             // download javascript file
             Frontgate.router.on('#Minify/download', function(hash){
                 if($('#download-file').attr('href')){
@@ -159,7 +147,6 @@ Situs = window.Situs || Frontgate.location({
                 }
                 location.hash = "Minify";
             });
-
             // switch to JavaScript code
             Frontgate.router.on('#Minify/javascript', function(hash){
                 $('#uglify-view').parent().siblings().find("a[data-toggle='code']").removeClass("selected");
@@ -172,7 +159,6 @@ Situs = window.Situs || Frontgate.location({
                 }
                 location.hash = "Minify";
             });
-
             // switch to minified code
             Frontgate.router.on('#Minify/minified', function(hash){
                 $('#minify-view').parent().siblings().find("a[data-toggle='code']").removeClass("selected");
@@ -184,7 +170,6 @@ Situs = window.Situs || Frontgate.location({
                 else return false;
                 location.hash = "Minify";
             });
-
             // compile code
             Frontgate.router.on('#Minify/compile', function(hash){
                 // Minify controller auth
@@ -218,23 +203,19 @@ Situs = window.Situs || Frontgate.location({
                 // restore hash
                 location.hash = "Minify";
             });
-
             // clear code
             Frontgate.router.on('#Minify/clear', function(hash){
-                editor.setValue(""); $('#code-output').val('');
-
+                editor.setValue("");
+                $('#code-output').val('');
                 $('#download-file, #minify-view').hide();
-                $('#uglify-view').click();
-
+                Frontgate.router.route("#Minify/javascript");
                 editor.setValue("//JavaScript\n");
-
                 location.hash = "Minify";
             });
 
             // closer-compiler Toggle
-            //Frontgate.Apps("Home")
             Bar.app("Minify").navigator.subscribeEvent('click', function(route){
-                Frontgate.Apps("Minify").panelToggle(route.res.input == '#Minify');
+                Frontgate.Apps("Minify").toolbox.App.panelToggle(route.res.input == '#Minify');
             });
 
             $('#closer-compiler')

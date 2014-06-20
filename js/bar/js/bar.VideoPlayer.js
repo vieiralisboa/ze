@@ -10,7 +10,7 @@ Situs = window.Situs || Frontgate.location({
     protocol: "https:"
 });
 
-Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
+Remote.stylesheet("docs/bar/css/bar.videoPlayer.css");
 
 (function(myTV){
 
@@ -18,6 +18,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     myTV.API = Frontgate.location({
         hostname: "situs.xn--stio-vpa.pt",
         protocol: "https:",
+        //port: 8080,
         pathname: "/myTV"
     });
 
@@ -26,7 +27,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     Frontgate.Apps("myTV", myTV);
 
     //1. load templates
-    Remote.template('jquery.bar/templates/videoPlayer.ol.html', function(template){
+    Remote.template('docs/bar/templates/videoPlayer.ol.html', function(template){
         myTV.templates.ol = template;
     });
 
@@ -109,7 +110,12 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     //-------------------------------------------------------------------------
     // remote video
     Frontgate.router.on(myTV.hash('show/:folder/:video'), function(hash){
-        myTV.selectShow($("a.video-show[href='" + hash.res[0] + "']").get(0));
+        var href = "a.video-show[href='%href%']"
+            .replace("%href%", hash.res[0])
+            .replace("\\","\\\\");
+
+        var el = $(href).get(0);
+        myTV.selectShow(el);
     });
     //TEST internet location
     Frontgate.router.on(myTV.hash('http:/:url'), function(hash){
@@ -132,7 +138,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         $('#video-show-input').click();
     });//*/
 })({
-    version: [0, 6, 3],
+    version: [0, 7, 0],
     appName: "Video Player",
     hash: function(route){
         var hash = '#' + this.appName.replace(" ", "") + "/" + route;
@@ -178,6 +184,17 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         this.localStorage.setItems(items);
     },
 
+    fullscreen :function(el){
+        // Mozilla
+        if(el.mozRequestFullScreen) 
+            el.mozRequestFullScreen();
+        // Webkit for video elements only
+        else if(el.webkitRequestFullscreen)
+            el.webkitRequestFullscreen();
+        else if(el.requestFullscreen)
+            el.requestFullScreen();
+    },
+
     // Play video
     //---------------------------------------------------------------------------
     play: function(attr, callback){
@@ -198,8 +215,10 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
             $(this.video).append($('<track>')
                     .addClass('vtt').attr({
                 src: attr['data-vtt'],
+                //src:"http://xn--stio-vpa.pt/VideoPlayer/Turbo.2013.720p.BluRay.x264.YIFY.vtt",
                 kind: "subtitles",
                 srclang: "pt",
+                default: "default",
                 label: "Portuguese"
             }));
         }
@@ -213,6 +232,7 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         // play
         this.videoPanel.publishEvent('play');
         this.video.play();
+
     },
 
     // video attributes Constructor
@@ -287,7 +307,10 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
     // EPG video show
     //-------------------------------------------------------------------------
     selectShow: function(el){
-        if(!el) return false;
+        if(!el){
+            //alert("NOEL");
+            return false;
+        }
 
         // EPG element is already selected
         if($(el).hasClass('selected')){
@@ -298,14 +321,16 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
                 });
             return false; 
         } 
-        
+
         // get video src from EPG element
         var src = $(el).attr('data-src');
 
         // an internet url
         if(src.match(/^http/i)){
-        }           
+            //
+        }
         else if(src.match(/^show/i)){
+            src = src.replace("\\","/");
             src = this.API.hrefAuth(src);
         } 
         else return;
@@ -314,9 +339,9 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
             src: src,
             'data-id':  $(el).attr('data-id'),
             'data-EPG': $(el).attr('data-EPG'),
-            'data-name': $(el).attr('data-name'),
+            'data-name':$(el).attr('data-name'),
             'data-vtt': $(el).attr('data-vtt'),
-            'data-time': $(el).attr('data-time'),
+            'data-time':$(el).attr('data-time'),
             'data-src': $(el).attr('data-src'),
             'data-m4v': $(el).attr('data-m4v')
         };
@@ -464,26 +489,43 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
             if(deleteName) delete this.listing[EPG][l];
         }
         
-        var N = 24;
+        var N = 128;
         if(list.length > N) list = list.slice(0, N);
+        
         for(var n in list){
-            var show = (function(string){
-                var show = string.match(/^(.*)\W(S\d\dE\d\d)(\W(.*))?$/i);
+            if(EPG == "movies/2013" || EPG == "movies/2014"){
+                var show = list[n].name.match(/^(.*)\W(20\d\d)\W([0-9]{2,3}0p)(\W(.*))?$/i);//1080,720,480
+                if(show) {   
+                	list[n].show = show[1];
+                	list[n].episode = null,
+                	list[n].S = show[2];
+                	list[n].E = " " + show[3];
+                }
+                else{
+                    list[n].show = list[n].name;
+                	list[n].episode = null,
+                	list[n].S = null;
+                	list[n].E = null;
+                }
+            }
+            else{
+            	var show = (function(string){
+                    var show = string.match(/^(.*)\W(S[0-9]{1,2})(E[0-9]{1,2}(E[0-9]{1,2})?)(\W(.*))?$/i);
 
-                if(show) return {
-                    show: show[1],
-                    episode: show[3],
-                    E: parseInt(show[2].substring(4)),
-                    S: parseInt(show[2].substring(1,3))
-                };
-                else return {};
-
-            })(list[n].name);
-
-            list[n].show = show.show;
-            list[n].episode = null,
-            list[n].S = show.S;
-            list[n].E = show.E;
+                	if(show) return {
+                    	show: show[1],
+                    	episode: null,
+                    	E: show[3],
+                    	S: show[2]
+                	};
+                	else return {};
+            	})(list[n].name);
+                
+           		list[n].show = show.show || list[n].name;
+            	list[n].episode = show.episode,
+            	list[n].S = show.S;
+            	list[n].E = show.E;
+        	}
         }
 
         // ol list from template
@@ -701,11 +743,22 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
                 }
             },
             {
+                text: 'Fullscreen',
+                attr:{
+                    id: 'fullscreen'
+                },
+                click: function(){
+                    var el = Frontgate.Apps('myTV').video;
+                    Frontgate.Apps('myTV').fullscreen(el);
+                }
+            },
+            {
                 text: 'Pop-up',
                 click: function(){
                     Frontgate.Apps('myTV').popup();
                 }
             },
+            
             {
                 text: 'Stop',
                 click: function(){
@@ -838,11 +891,20 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
         }
         else $hd.css('display', 'none');
 
+        var videoWidth = this.videoWidth;
+        var videoHeight = this.videoHeight;
+        
         // set video screen width
-        $(videoPlayer.video).attr('width', this.videoWidth+'px');
-        $(videoPlayer.video).attr('height', this.videoHeight +'px');
+        if(this.videoWidth >= 1280){
+            videoWidth = 854;
+            videoHeight = (videoHeight*videoWidth)/this.videoWidth;
+        }
+        
+        $(videoPlayer.video).attr('width', videoWidth+'px');
+        $(videoPlayer.video).attr('height', videoHeight +'px');
 
-        videoPlayer.videoPanel.$panel.height(this.videoHeight);
+        //videoPlayer.videoPanel.$panel.height(this.videoHeight);
+        videoPlayer.videoPanel.$panel.height($(videoPlayer.video).height());
 
         // hide ajax gif from EPG panel
         $('a.video-show.selected').siblings('img.wait').removeClass('visible').addClass('hidden');
@@ -954,8 +1016,10 @@ Remote.stylesheet("jquery.bar/css/bar.videoPlayer.css");
             });
 
             // Private playlists
-            VideoPlayer.myBookLiveTV('Adventure.Time.S05');
-            VideoPlayer.myBookLiveTV('New');
+            //VideoPlayer.myBookLiveTV('tv-shows/Adventure.Time.S05');
+            VideoPlayer.myBookLiveTV('NEW');
+            VideoPlayer.myBookLiveTV('movies/2013');
+            VideoPlayer.myBookLiveTV('movies/2014');
 
             var offset = $('#body div.bar').offset();
             $('#epg-panel, #tv-panel')
