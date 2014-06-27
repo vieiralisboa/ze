@@ -814,7 +814,7 @@ Remote.stylesheet("docs/bar/css/bar.videoPlayer.css");
             var hash = '#';
             hash += video.src.replace(/\w+\:\w+\@/, '');
             hash += '&' + Math.floor(video.currentTime);
-            var url = Remote.href("jquery.bar/templates/popup.html") + hash;
+            var url = Remote.href("docs/bar/templates/popup.html") + hash;
         }
 
         this.stop();
