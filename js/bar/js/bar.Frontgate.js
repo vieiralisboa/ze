@@ -1,6 +1,9 @@
-//if(Bar.app("Home")) throw "Barra 'Home' já existe!";
+if(Bar.app("Home")) throw "Barra 'Home' já existe!";
+//------------------
+// Auto loading bar
+//------------------
 
+//Bar.load(selector, callback, FILE);
 Bar.load('#header', function(bar, data){
-	// callback
 	Bar.alias("Frontgate", "Home");
-});
+}, FILE);

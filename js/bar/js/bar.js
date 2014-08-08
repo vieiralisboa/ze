@@ -1,22 +1,24 @@
 // Bar
 
 (function(Bar){
-
     //TEMP
-    //TODO use situs controller local FILE
+    //TODO use situs controller local FILE var
     var FILE = {
         name: "Bar",
         filename: "bar.js",
         script: "jquery.bar/js/bar.js",
         path: "/htdocs/libs/jquery.bar/js/bar.js",
-        host: "https://xn--stio-vpa.pt/",
-        url: "https://xn--stio-vpa.pt/jquery.bar/js/bar.js"
-    };
+        host: "http://situs.xn--stio-vpa.pt/",
+        url: "http://situs.xn--stio-vpa.pt/jquery.bar/js/bar.js"
+    };//*/
 
-    Bar.API = window.Remote || Frontgate.location({
-        hostname: "situs.xn--stio-vpa.pt",
-        pathname: "libs",
-        protocol: "https:"
+    // http://situs.pt/bar/Frontgate
+    // http://situs.pt/situs/bar?Frontgate
+    Bar.API = new Frontgate.Location({
+        hostname: $('html').attr("data-situs_hostname"),// example.com
+        pathname: "/bar",// href(Frontgate) => /bar/Frontgate
+        port: parseInt($('html').attr("data-situs_port")),
+        protocol: $('html').attr("data-situs_protocol")
     });
 
     window.Bar = Bar;
@@ -32,70 +34,81 @@
         }
 
         if (!this.length) {
-            console.error("missing container for the bar");
+            console.warn("missing container for the bar");
             if(!this.selector.match(/^\#/)) {
                 return this;
             }
             //console.log("Bar will create the container", this.selector);
         }
 
-        var index, bar, app;
+        var index, bar, bars, app;
 
         // Existing bar
         if(this.hasClass('bar-container')){
-            //console.log("element is already a bar", this);
+            //console.warn("element is a bar-container", this);
+
+            bars = this.find('.bar');
+
+            if(!bars.length){
+                //console.error("invalid bar-container", this);
+                throw "invalid bar-container";
+            }
 
             // The toolbar index
-            index = this.find('.bar').first().attr('data-bar');
-
-            // get the Bar instance
-            bar = Bar.bars[parseInt(index)];
-
-            // append toolbar items
-            if (data.items) {
-                bar.items(data.items);
+            index = bars.first().attr('data-bar');
+            if(typeof index == 'undefined'){
+                this.html("");
             }
+            else{
+                // get the Bar instance
+                bar = Bar.bars[parseInt(index)];
 
-            // no toolbox
-            if (!data.toolbox) {
-                if(data.callback) {
-                    data.callback(bar);
+                // append toolbar items
+                if (data.items) {
+                    bar.items(data.items);
                 }
+
+                // no toolbox
+                if (!data.toolbox) {
+                    if(data.callback) {
+                        data.callback(bar);
+                    }
+                    return this;
+                }
+
+                if (!data.toolbox.name) {
+                    throw "a toolbox name is required";
+                }
+
+                // BAR ONLY CREATES NEW TOOLBOXES!
+                // use the bar object or callback to add items to the toolbox
+
+                // toolbox bar index
+                index = Bar.names(data.toolbox.name)['data-b64'];
+
+                // the toolbox exists
+                if (Bar.app[index]) {
+                    //console.log(data.toolbox.name, "toolbox is already set");
+
+                    if (data.toolbox.items) {
+                        Bar.app[index].toolbox.items(data.toolbox.items);
+                    }
+
+                    if (data.callback) {
+                        data.callback(Bar.app[index]);
+                    }
+
+                    return this;
+                }
+
+                // new toolbox and callback
+                if (Bar.toolbox(bar, data.toolbox) && data.callback) {
+                    data.callback(bar, data);
+                }
+
+                // keep chainning
                 return this;
             }
-
-            if (!data.toolbox.name) {
-                throw "a toolbox name is required";
-            }
-
-            // !BAR ONLY CREATES NEW TOOLBOXES!
-            // use the bar object or callback to add items to the toolbox
-
-            // toolbox bar index
-            index = Bar.names(data.toolbox.name)['data-b64'];
-
-            // the toolbox exists
-            if (Bar.app[index]) {
-                //console.log(data.toolbox.name, "toolbox is already set");
-
-                if (data.toolbox.items) {
-                    Bar.app[index].toolbox.items(data.toolbox.items);
-                }
-
-                if (data.callback) {
-                    data.callback(Bar.app[index]);
-                }
-
-                return this;
-            }
-
-            // new toolbox and callback
-            if (Bar.toolbox(bar, data.toolbox) && data.callback) {
-                data.callback(bar, data);
-            }
-
-            // keep chainning
-            return this;
         }
 
         // new toolbar
@@ -127,7 +140,7 @@
 })
 ({
     name: 'Bar',
-    version: [0, 7, 1],
+    version: [0, 8, 0],
     bars: [],
 
     bar: function($bar) {
@@ -387,7 +400,7 @@
         return {
             'data-text': name,
             'data-name': toolboxName,
-            'data-file': "bar?" + toolboxName, //"bar." + toolboxName + ".js",
+            'data-file': "bar/" + toolboxName, //"bar." + toolboxName + ".js",
             href: "#" + toolboxName,
             'data-b64': Frontgate.b64(toolboxName)//Frontgate.b64(name)//
         };
@@ -410,13 +423,14 @@
         if (match) return  {
             name: match[2],
             //"jquery.bar/js/bar." + match[2] + ".js",
-            script: "situs/js/bar?%bar%".replace("%bar%", match[2]),
+            //script: "situs/js/bar?%bar%".replace("%bar%", match[2]),
+            script: "bar/%bar%".replace("%bar%", match[2]),
             hash: match.input,
             match: match
         };
 
         //url.match(/^jquery.bar\/js\/bar\.([\w\-\_\é\á\í\ó]*)\.js$/i);
-        match = url.match(/^situs\/js\/bar\?([\w\-\u00C0-\u00ff]*)$/i);
+        match = url.match(/^bar\/([\w\-\u00C0-\u00ff]*)$/i);
 
         if (match) {
             return {
@@ -472,39 +486,31 @@
     // bar loader
     //-------------------------------------------------------------------------
     _requestHash: null,
-    load: function(barSelector, callback, jsonFile, appName){
-        jsonFile = jsonFile || BAR_JSON;// BAR_JSON from Situs controller
-        jsonFile = this.API.href(jsonFile);
+    //----------------------------------------------------
+    // use only in bar scripts served by situs controller
+    //----------------------------------------------------
+    load: function(barSelector, callback, FILE){
+        if(!FILE) throw "FILE is undefined";
+        console.warn("FILE", FILE);
+        data = JSON.parse(FILE.json);
 
-        $.ajax({ url: jsonFile, dataType: 'json', success: function(data){
-            data = parseInt($.fn.jquery) > 1 ? data : JSON.parse(data);
+        var toolbar = {
+            items: [],//TODO a good way to pass the Toolbar items
+            toolbox: data,// json data
+            callback: callback
+        };
 
-            //TODO use BAR_NAME (the file name) as reference to the bar Addon
-            // The file name must match the name in json file for it to
-            // auto load from the location hash.
-            // 'Video Player' => '#VideoPlayer' => 'VideoPlayer.json'
-            // 'myVideo' => '#Myvideo' => 'Myvideo.json'
+        //REQUIRED to store the toolbar (App.bar) circular reference
+        data.App = toolbar;// Frontgate.Apps(app);
 
-            var toolbar = {
-                items:[],//TODO a good way to pass the Toolbar items
-                toolbox: data,
-                callback: callback
-            };
-
-            //REQUIRED to store the toolbar (App.bar)
-            data.App = toolbar;// Frontgate.Apps(app);
-
-            $(barSelector).bar(toolbar);// => Frontgate.Apps(app, App);
-        }
-        });
-
-        delete window.BAR_JSON;
-        delete window.BAR_NAME;
+        // CREATE BAR
+        $(barSelector).bar(toolbar);// => Frontgate.Apps(app, App);
     },
 
     // loads Bar (toolbox) addon from script
     //-------------------------------------------------------------------------
     getBar: function(urls, callback){
+        //console.info(urls);
 
         if(!urls.name) {
             callback({
@@ -530,6 +536,7 @@
         else {
             // load required script 'bar/js/bar.<toolbox.name>.js'
             var script = this.autoLoad.location.href(urls.script);
+            $.ajaxSetup({ cache: true });
             $.getScript(script, function(data, textStatus, jqxhr){
                 if (textStatus != "success") {
                     throw "error loading " + script;
@@ -546,38 +553,27 @@
     // bar auto loader
     //-------------------------------------------------------------------------
     autoLoad: {
-
         // location to auto load bars from
         location: null,
-
         // starts auto loading bars
         start: function(location){
-            if(this.started) {
-                return false;
-            }
-
+            // auto load already started
+            if(this.started) return false;
             // auto load requires Frontgate
-            if(!Frontgate) {
-                return false;
-            }
-
+            if(!Frontgate) return false;
+            // enable auto loading
             this.started = true;
-
-            // location to auto load bars from
-            this.location = location || Frontgate;
-
-            // set onNotFound route event handler
-            Frontgate.router.onNotFound = function(hash, base, route, callback){
+            // auto load the bars from custom location or Frontgate
+            this.location = location || Bar.API;
+            // onNotFound event handler to load a bar when route is not found
+            Frontgate.router.onNotFound = function(hash,base,route,callback){
                 // load bar (toolbar addon) from script
                 Bar.getBar(Bar.urls(hash), function(error, app){
-                    // select addon tab
+                    // select the bar tab (toolbar addon)
                     if (!error && app && app.href) {
                         Frontgate.router.route(app.href);
-                        //console.info("getBar", app);
                     }
-
-                    //else console.error("error getBar", hash);
-
+                    // callback
                     if (typeof callback == 'function') {
                         callback(hash, base, route, app||0);
                     }
@@ -588,14 +584,14 @@
             //TODO
         }
     },
-
+    //TODO move into autoLoad object
     styles: {
         href: "jquery.bar/css/bar.css",
         load: function(location){
             location.stylesheet(this.href);
         }
     },
-
+    //TODO move into autoLoad object
     start: function(location){
         // start auto loading bars
         this.autoLoad.start(location);
@@ -603,9 +599,10 @@
         // load stylesheet
         //this.styles.load(location);
 
+        // chain with Bar
         return this;
     },
-
+    //TODO move into autoLoad object
     route: function(hash, callback){
         if (this.autoLoad.started) {
             Frontgate.router.route(hash, callback);
@@ -616,6 +613,7 @@
 
         //Bar.getBar(Bar.urls(hash), callback);
 
+        // chain with Bar
         return this;
     }
 });
