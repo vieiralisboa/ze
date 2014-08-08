@@ -1,14 +1,11 @@
 //REQUIRES Frontgate
 
 Remote = window.Remote || Frontgate.location({
-    hostname: "xn--stio-vpa.pt",
-    protocol: "https:"
+    hostname: "situs.xn--stio-vpa.pt",
+    protocol: "http:"
 });
 
-Situs = window.Situs || Frontgate.location({
-    hostname: "situs.xn--stio-vpa.pt",
-    protocol: "https:"
-});
+Situs = window.Situs || Remote;
 
 Remote.stylesheet("docs/bar/css/bar.videoPlayer.css");
 
@@ -16,7 +13,7 @@ Remote.stylesheet("docs/bar/css/bar.videoPlayer.css");
 
     // myTV controller
     myTV.API = Frontgate.location({
-        hostname: "situs.xn--stio-vpa.pt",
+        hostname: "situs.pt",
         protocol: "https:",
         //port: 8080,
         pathname: "/myTV"
@@ -525,6 +522,7 @@ Remote.stylesheet("docs/bar/css/bar.videoPlayer.css");
             	list[n].episode = show.episode,
             	list[n].S = show.S;
             	list[n].E = show.E;
+
         	}
         }
 
@@ -533,6 +531,7 @@ Remote.stylesheet("docs/bar/css/bar.videoPlayer.css");
             Listing: this.listing[EPG],
             href: this.hash("/"),
             EPG: EPG,
+            wait: Remote.href("/fugue-icons/3.5.6/bonus/animated/icons/ui-progress-bar-indeterminate.gif"),
             items: list
         })).appendTo('#epg-panel');
 
