@@ -1,21 +1,18 @@
 // Requires Frontgate, jQuery Uploader plugin, closure_compiler controller
 
 Remote = window.Remote || Frontgate.location({
-    hostname: "xn--stio-vpa.pt",
+    hostname: "situs.pt",
     protocol: "https:"
 });
 
-Situs = window.Situs || Frontgate.location({
-    hostname: "situs.xn--stio-vpa.pt",
-    protocol: "https:"
-});
+Situs = window.Situs || window.Remote;
 
 //TODO auto create the Situs closure_compiler controller (API)
 
 (function(Minify) {
 
     Minify.API = Frontgate.location({
-        hostname: "situs.xn--stio-vpa.pt",
+        hostname: "situs.pt",
         protocol: "https:"//,pathname: "/closer-compiler"
     });
 
