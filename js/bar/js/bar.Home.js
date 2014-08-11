@@ -1,6 +1,7 @@
 if(Bar.app("Início")) throw "Barra já existe!";
-/*/ 
-$.get(Remote.href("hosts/%host%/js/bar.Home.json".replace("%host%", $('html').attr('data-host'))), 
+
+/*/LOADING BAR
+$.get("http://hosts.medorc.org/xn--stio-vpa/json/bar.Home.json"),
         function(data){
 
     //if(Bar.app(data.name)) throw "Barra já existe!";
@@ -32,8 +33,8 @@ $.get(Remote.href("hosts/%host%/js/bar.Home.json".replace("%host%", $('html').at
         }
 	});
 });
-//*/
-
+/*/
+//AUTO LOADING BAR
 Bar.load('#header', function(bar, data){
 
     Frontgate.router.on("#Home", function(hash){
@@ -42,12 +43,12 @@ Bar.load('#header', function(bar, data){
 
     // mostrar item IE apenas se o utilizador for "daniel"
     if(Frontgate.attr().user == "daniel") $("#isec-ei").show();
-
     Frontgate.subscribeEvent('userChange', function(attr){
         if(attr.user == "daniel") $("#isec-ei").show();
         else $("#isec-ei").hide();
     });
-});
+
+}, FILE);//*/
 
 //------------------------------------------------------------------
 // BUG:
