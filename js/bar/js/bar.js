@@ -21,7 +21,7 @@
         protocol: $('html').attr("data-situs_protocol")
     });
 
-    window.Bar = Bar;
+    window.Bar = Bar.autoLoad.Bar = Bar;
 
     if (window.Ze && typeof Ze.bar == "undefined") {
         Ze.bar = Bar;
@@ -466,7 +466,7 @@
         return false;
     },
 
-    // Addon helper
+    // Addon app helper
     //-------------------------------------------------------------------------
     app: function(app){
         if (typeof app == "string") {
@@ -500,10 +500,11 @@
             callback: callback
         };
 
-        //REQUIRED to store the toolbar (App.bar) circular reference
+        //REQUIRED to store the toolbar (App.bar)
+        // circular reference
         data.App = toolbar;// Frontgate.Apps(app);
 
-        // CREATE BAR
+        //BAR
         $(barSelector).bar(toolbar);// => Frontgate.Apps(app, App);
     },
 
@@ -549,14 +550,34 @@
 
         return true;
     },
-
+    /*/
+    styles: {
+        href: "css/bar.css",
+        load: function(location){
+            if(typeof location == 'undefined'){
+                Bar.API.stylesheet("css");
+            }
+            else location.stylesheet(this.href);
+        }
+    }//*/
     // bar auto loader
     //-------------------------------------------------------------------------
     autoLoad: {
         // location to auto load bars from
         location: null,
-        // starts auto loading bars
+        //
         start: function(location){
+            // start auto loading bars
+            this.init(location);
+
+            // load stylesheet
+            //this.styles.load(location);
+
+            // chain with Bar
+            return Bar;
+        },
+        // starts auto loading bars
+        init: function(location){
             // auto load already started
             if(this.started) return false;
             // auto load requires Frontgate
@@ -582,38 +603,20 @@
         },
         stop: function(){
             //TODO
-        }
-    },
-    //TODO move into autoLoad object
-    styles: {
-        href: "jquery.bar/css/bar.css",
-        load: function(location){
-            location.stylesheet(this.href);
-        }
-    },
-    //TODO move into autoLoad object
-    start: function(location){
-        // start auto loading bars
-        this.autoLoad.start(location);
+        },
+        // Requires Frontgate
+        route: function(hash, callback){
+            if (this.started) {
+                Frontgate.router.route(hash, callback);
+            }
+            else {
+                throw "AutoLoad is disabled";
+            }
 
-        // load stylesheet
-        //this.styles.load(location);
+            //Bar.getBar(Bar.urls(hash), callback);
 
-        // chain with Bar
-        return this;
-    },
-    //TODO move into autoLoad object
-    route: function(hash, callback){
-        if (this.autoLoad.started) {
-            Frontgate.router.route(hash, callback);
+            // chain with Bar
+            return Bar;
         }
-        else {
-            throw "AutoLoad is disabled";
-        }
-
-        //Bar.getBar(Bar.urls(hash), callback);
-
-        // chain with Bar
-        return this;
     }
 });
