@@ -1,8 +1,8 @@
 // Requires Frontgate, jQuery Uploader plugin, closure_compiler controller
 
 Remote = window.Remote || Frontgate.location({
-    hostname: "situs.pt",
-    protocol: "https:"
+    hostname: "docs.medorc.org",
+    protocol: "http:"
 });
 
 Situs = window.Situs || window.Remote;
@@ -12,8 +12,9 @@ Situs = window.Situs || window.Remote;
 (function(Minify) {
 
     Minify.API = Frontgate.location({
-        hostname: "situs.pt",
-        protocol: "https:"//,pathname: "/closer-compiler"
+        hostname: "situs.no-ip.org",
+        port: 8080,
+        protocol: "http:"//,pathname: "/closer-compiler"
     });
 
     Minify.API.auth({
@@ -28,10 +29,9 @@ Situs = window.Situs || window.Remote;
     console.info("API.hrefAuth('closer-compiler')", API.hrefAuth('closer-compiler'));//*/
 
     // Closer Compiler UI (JShrink on Linux)
-    Remote.scripts('ace-builds/src-noconflict/ace.js','docs/uploader/min-index_0.0.2.js', function(){
-
+    Remote.scripts('ace-builds/src-noconflict/ace.js','uploader/min-index_0.0.2.js', function(){
         // Load the template and then load the Minify bar
-        Remote.template('docs/bar/templates/Minify.template.html', function(template){
+        Minify.API.template('bar/templates/Minify.template.html', function(template){
             // template
             $('body').append(template);
 
@@ -74,7 +74,7 @@ Situs = window.Situs || window.Remote;
 
                 // select code input
                 $('#uglify-view').click();
-            });
+            }, FILE);
         });
     });
 
@@ -83,7 +83,7 @@ Situs = window.Situs || window.Remote;
 })
 ({
     name: "Minify",
-    version: [0, 4, 0],
+    version: [0, 5, 0],
 
     panelToggle: function(toggle){
         if(toggle){
