@@ -7,15 +7,15 @@ Remote = window.Remote || Frontgate.location({
 
 Situs = window.Situs || Remote;
 
-Remote.stylesheet("docs/bar/css/bar.videoPlayer.css");
+//Remote.stylesheet("bar/css/videoPlayer");
+Bar.autoLoad.css("videoPlayer");
 
 (function(myTV){
-
     // myTV controller
     myTV.API = Frontgate.location({
-        hostname: "situs.pt",
-        protocol: "https:",
-        //port: 8080,
+        hostname: "situs.no-ip.org",
+        protocol: "http:",
+        port: 8080,
         pathname: "/myTV"
     });
 
@@ -46,7 +46,7 @@ Remote.stylesheet("docs/bar/css/bar.videoPlayer.css");
         // File Input Change
         document.querySelector('#video-show-input')
         .addEventListener('change', myTV.playSelectedFile, false);
-    });
+    }, FILE);
 
     //3. Event lsteners
     //-------------------------------------------------------------------------
