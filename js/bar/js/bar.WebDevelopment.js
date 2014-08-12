@@ -1,11 +1,11 @@
 Bar.load('#header', function(bar, addon){
   $('#header').bar({
     _items: [{
-      text: 'slave',
+      text: 'child',
       css:{ cursor: "pointer" },
       click: function(e){
-        alert("my master is "+addon.toolbox.name);
+        alert("my father is " + addon.toolbox.name);
       }
     }]
   });
-});
+}, FILE);
