@@ -1,7 +1,8 @@
 // Bar
 
 (function(Bar){
-    //TEMP
+
+    /*/TEMP
     //TODO use situs controller local FILE var
     var FILE = {
         name: "Bar",
@@ -12,8 +13,10 @@
         url: "http://situs.xn--stio-vpa.pt/jquery.bar/js/bar.js"
     };//*/
 
+    //REQUIRED Frontgate
     // http://situs.pt/bar/Frontgate
     // http://situs.pt/situs/bar?Frontgate
+
     Bar.API = new Frontgate.Location({
         hostname: $('html').attr("data-situs_hostname"),// example.com
         pathname: "/bar",// href(Frontgate) => /bar/Frontgate
@@ -21,12 +24,13 @@
         protocol: $('html').attr("data-situs_protocol")
     });
 
-    window.Bar = Bar.autoLoad.Bar = Bar;
+    window.Bar = Bar;
 
     if (window.Ze && typeof Ze.bar == "undefined") {
         Ze.bar = Bar;
     }
 
+    // jQuery plugin
     $.fn.bar = function(data) {
         if (!data) {
             console.error("Bar requires data");
@@ -34,7 +38,7 @@
         }
 
         if (!this.length) {
-            console.warn("missing container for the bar");
+            //console.warn("missing container for the bar");
             if(!this.selector.match(/^\#/)) {
                 return this;
             }
@@ -140,7 +144,7 @@
 })
 ({
     name: 'Bar',
-    version: [0, 8, 0],
+    version: [0, 8, 1],
     bars: [],
 
     bar: function($bar) {
@@ -491,8 +495,13 @@
     //----------------------------------------------------
     load: function(barSelector, callback, FILE){
         if(!FILE) throw "FILE is undefined";
-        console.warn("FILE", FILE);
+        //console.warn("FILE", FILE);
         data = JSON.parse(FILE.json);
+
+        //TODO load stylesheet
+        if(data.css){
+            this.autoLoad.css(FILE.bar);
+        }
 
         var toolbar = {
             items: [],//TODO a good way to pass the Toolbar items
@@ -563,35 +572,37 @@
     // bar auto loader
     //-------------------------------------------------------------------------
     autoLoad: {
-        // location to auto load bars from
+        // API Location
         location: null,
-        //
+        _start: false,
+        // start auto loading bars
         start: function(location){
+            if(this._start) return false;
             // start auto loading bars
             this.init(location);
-
-            // load stylesheet
-            //this.styles.load(location);
-
             // chain with Bar
-            return Bar;
+            return this;
         },
         // starts auto loading bars
         init: function(location){
             // auto load already started
-            if(this.started) return false;
+            if(this._start) return false;
             // auto load requires Frontgate
             if(!Frontgate) return false;
-            // enable auto loading
-            this.started = true;
             // auto load the bars from custom location or Frontgate
             this.location = location || Bar.API;
+            // enable auto loading
+            this._start = true;
+            // load bar stylesheet
+            this.css();
             // onNotFound event handler to load a bar when route is not found
             Frontgate.router.onNotFound = function(hash,base,route,callback){
                 // load bar (toolbar addon) from script
                 Bar.getBar(Bar.urls(hash), function(error, app){
                     // select the bar tab (toolbar addon)
                     if (!error && app && app.href) {
+                        //Bar.autoLoad.css(app.name);
+
                         Frontgate.router.route(app.href);
                     }
                     // callback
@@ -604,19 +615,36 @@
         stop: function(){
             //TODO
         },
+        _css: false,
+        css: function(barname){
+            // auto loading is disabled
+            if(!this._start) return false;
+
+            // argument is a bar name
+            if(typeof barname == 'string') {
+                // load its stylesheet
+                this.location.stylesheet("bar/css/" + barname);
+            }
+            // the Bar's stylesheet
+            else if(!this._css) {
+                //TODO check the DOM for "bar/css"
+                // load the Bar's stylesheet
+                this.location.stylesheet("bar/css");
+                this._css = true;
+            }
+
+            return this;
+        },
         // Requires Frontgate
         route: function(hash, callback){
-            if (this.started) {
-                Frontgate.router.route(hash, callback);
-            }
-            else {
-                throw "AutoLoad is disabled";
-            }
+            if (!this._start) return false;
+            //throw "AutoLoad is disabled";
+
+            Frontgate.router.route(hash, callback);
 
             //Bar.getBar(Bar.urls(hash), callback);
 
-            // chain with Bar
-            return Bar;
+            return this;
         }
     }
 });
