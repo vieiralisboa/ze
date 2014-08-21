@@ -12,9 +12,9 @@ Situs = window.Situs || window.Remote;
 (function(Minify) {
 
     Minify.API = Frontgate.location({
-        hostname: "situs.no-ip.org",
-        port: 8080,
-        protocol: "http:"//,pathname: "/closer-compiler"
+        hostname: $('html').attr('data-situs_hostname'),//"situs.no-ip.org",
+        port: parseInt($('html').attr('data-situs_port')),//80,
+        protocol: $('html').attr('data-situs_protocol'),//"http:"//,pathname: "/closer-compiler"
     });
 
     Minify.API.auth({
