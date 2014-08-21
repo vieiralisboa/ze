@@ -2,7 +2,8 @@
     "name": "Web Development",
     "description": "Web Development Tools and Examples",
     "items": [{
-        "text": "Closer Compiler UI",
+        "text": "JShrink",
+        "_text": "Closer Compiler UI",
         "attr":{
             "href": "#!Minify"
         }
