@@ -1,7 +1,7 @@
 //REQUIRES Frontgate
 
 Remote = window.Remote || Frontgate.location({
-    hostname: "situs.xn--stio-vpa.pt",
+    hostname: "docs.medorc.org",
     protocol: "http:"
 });
 
@@ -13,9 +13,9 @@ Bar.autoLoad.css("videoPlayer");
 (function(myTV){
     // myTV controller
     myTV.API = Frontgate.location({
-        hostname: "situs.no-ip.org",
+        hostname: "situs.pt",
         protocol: "http:",
-        port: 8080,
+        //port: 8080,
         pathname: "/myTV"
     });
 
@@ -24,7 +24,12 @@ Bar.autoLoad.css("videoPlayer");
     Frontgate.Apps("myTV", myTV);
 
     //1. load templates
-    Remote.template('docs/bar/templates/videoPlayer.ol.html', function(template){
+     Frontgate.location({
+        hostname: "situs.no-ip.org",
+        protocol: "http:",
+        port: 8080,
+        pathname: "/"
+    }).template('docs/bar/templates/videoPlayer.ol.html', function(template){
         myTV.templates.ol = template;
     });
 
