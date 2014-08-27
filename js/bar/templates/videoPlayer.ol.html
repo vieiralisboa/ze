@@ -1,5 +1,9 @@
 <ol class="epg-list">
 	<% _.each(items, function(item){ %>
-	<li data-cc="<%= item.cc %>" data-hd="<%= item.m4v %>" title="<%= item.title %>"><a href="<%= href %><%= item.src %>" class="video-show" data-id="<%= item.id %>" data-m4v="<%= item.m4v %>" data-vtt="<%= item.vtt %>" data-name="<%= item.name %>" data-src="<%= item.src %>" data-time="<% print(Listing[item.name] || 0); %>" data-epg="<%= EPG %>" ><b><%= item.show %></b> <span class="show-episode"><%= item.S %><%= item.E %></span><br><span class="show-name"><%= item.episode %></span></a><span class="hidden closed-caption" title="subtitles">CC</span><span class="hidden high-def">HD</span><img class="hidden wait" src="<%= wait %>"></li>
+	<li data-cc="<%= item.cc %>" data-hd="<%= item.m4v %>" title="<%= item.title %>">
+		<a href="<%= href %><%= item.src %>" class="video-show" data-id="<%= item.id %>" data-m4v="<%= item.m4v %>" data-vtt="<%= item.vtt %>" data-name="<%= item.name %>" data-src="<%= item.src %>" data-time="<% print(Listing[item.name] || 0); %>" data-epg="<%= EPG %>" ><b><%= item.show %></b> <span class="show-episode"><%= item.S %><%= item.E %></span><br><span class="show-name"><%= item.episode %></span></a>
+		<span class="hidden closed-caption" title="subtitles">CC</span><span class="hidden high-def">HD</span>
+		<img class="hidden wait" src="<%= wait %>">
+	</li>
 	<% }) %>
 </ol>
