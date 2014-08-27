@@ -10,30 +10,40 @@ Situs = window.Situs || Remote;
 //Remote.stylesheet("bar/css/videoPlayer");
 Bar.autoLoad.css("videoPlayer");
 
+//TODO merge autoLoad with load
+//Bar.load.css("videoPlayer");
+
 (function(myTV){
     // myTV controller
-    myTV.API = Frontgate.location({
-        hostname: "situs.pt",
-        protocol: "http:",
-        //port: 8080,
-        pathname: "/myTV"
-    });
+    myTV.API = Frontgate.location(myTV.remote);
 
+    //
     myTV.API.auth(Frontgate.basicAuth());
 
+    //
     Frontgate.Apps("myTV", myTV);
 
-    //1. load templates
-     Frontgate.location({
+    /*/1. load templates
+    //-------------------------------------------------------------------------
+    Frontgate.location({
         hostname: "situs.no-ip.org",
         protocol: "http:",
         port: 8080,
         pathname: "/"
     }).template('docs/bar/templates/videoPlayer.ol.html', function(template){
         myTV.templates.ol = template;
+    });//*/
+    //TODO use private FILE object
+    //if(FILE && FILE.templates) myTV.templates = FILE.templates;
+    // using Bar controller
+    Bar.API.template("VideoPlayer/template/ol", function(template){
+        //ze.sítio.pt/bars/templates/VideoPlayer.ol.html
+        myTV.templates.ol = template;
     });
 
-    //2. Toolbar (Bar)
+    
+
+    // 2. Toolbar (Bar)
     //-------------------------------------------------------------------------
     Bar.load('#header', function(bar, data){
         // toolbar items and callback
@@ -50,7 +60,7 @@ Bar.autoLoad.css("videoPlayer");
 
         // File Input Change
         document.querySelector('#video-show-input')
-        .addEventListener('change', myTV.playSelectedFile, false);
+            .addEventListener('change', myTV.playSelectedFile, false);
     }, FILE);
 
     //3. Event lsteners
@@ -140,8 +150,14 @@ Bar.autoLoad.css("videoPlayer");
         $('#video-show-input').click();
     });//*/
 })({
-    version: [0, 7, 0],
     appName: "Video Player",
+    version: [0, 7, 1],
+    remote: {
+        hostname: "situs.pt",
+        protocol: "http:",
+        //port: 8080,
+        pathname: "/myTV"
+    },
     hash: function(route){
         var hash = '#' + this.appName.replace(" ", "") + "/" + route;
         hash = hash.replace(/[\/]+/g, "/");
@@ -814,7 +830,6 @@ Bar.autoLoad.css("videoPlayer");
             return false;
         }
         else {
-            //TODO include video name and current time in the hash
             var hash = '#';
             hash += video.src.replace(/\w+\:\w+\@/, '');
             hash += '&' + Math.floor(video.currentTime);
