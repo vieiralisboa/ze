@@ -623,7 +623,7 @@
             // argument is a bar name
             if(typeof barname == 'string') {
                 // load its stylesheet
-                this.location.stylesheet("bar/css/" + barname);
+                this.location.stylesheet("bar/" + barname + "/css");
             }
             // the Bar's stylesheet
             else if(!this._css) {
