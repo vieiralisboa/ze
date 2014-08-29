@@ -31,7 +31,7 @@ Situs = window.Situs || window.Remote;
     // Closer Compiler UI (JShrink on Linux)
     Remote.scripts('ace-builds/src-noconflict/ace.js','uploader/min-index_0.0.2.js', function(){
         // Load the template and then load the Minify bar
-        Minify.API.template('Minify/template/template', function(template){
+        Minify.API.template('bar/Minify/template/template', function(template){
             // template
             $('body').append(template);
 
