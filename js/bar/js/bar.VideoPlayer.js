@@ -833,7 +833,7 @@ Bar.autoLoad.css("videoPlayer");
             var hash = '#';
             hash += video.src.replace(/\w+\:\w+\@/, '');
             hash += '&' + Math.floor(video.currentTime);
-            var url = "http://situs.pt/docs/bar/templates/popup.html" + hash;
+            var url = "https://situs.pt/docs/bar/templates/popup.html" + hash;
         }
 
         this.stop();
