@@ -154,8 +154,7 @@ Bar.autoLoad.css("videoPlayer");
     version: [0, 7, 1],
     remote: {
         hostname: "situs.pt",
-        protocol: "http:",
-        //port: 8080,
+        protocol: "https:",
         pathname: "/myTV"
     },
     hash: function(route){
