@@ -295,7 +295,7 @@ Bar.autoLoad.css("videoPlayer");
 
             //HACK force browsers to stop downloading
             video.autoplay = false;
-            video.src = null;
+            video.src = '';//null;
             
             if(this.videoPanel.$panel.is(':visible')) this.videoPanel.$panel.toggle();
 
@@ -311,6 +311,8 @@ Bar.autoLoad.css("videoPlayer");
             this.localStorage.setItem(EPG, JSON.stringify(this.listing[EPG]));
             this.localStorage.removeItems(['last'+EPG+'Name', 'last'+EPG+'Src', 'last'+EPG+'Time']);
             this.unselectShow(true);
+            
+            location.hash = 'VideoPlayer';
         }
     },
 
