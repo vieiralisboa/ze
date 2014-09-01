@@ -5,7 +5,7 @@
 		<title>Zé</title>
 		<link rel="stylesheet" href="css/styles.css">
 		<script type="text/javascript" src="js/jquery/jquery-2.0.3.min.js"></script>
-		<script type="text/javascript" src="js/ze.js"></script>
+		<script type="text/javascript" src="ze/ze.js"></script>
 	</head>
 	<body>
 		<div id="button"><button onclick="Ze('#button').code();">view this button as code</button></div>
@@ -13,11 +13,11 @@
 		<div id="view-html"><button onclick="Ze('#view-html').code('index.html');">view source code</button></div>
 		<script type="text/javascript">
 			Ze.loadScript("js/prefixfree.js");
-	
+
 			// append/prepend HTML
 			Ze('body').append("tests/test.php");
 			Ze('body').prepend("tests/hi.html");
-			
+
 			// append code
 			//TODO Ze(sel).prependCode(url)
 			Ze('body').appendCode("tests/test.php");
