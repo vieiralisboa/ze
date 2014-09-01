@@ -1,22 +1,18 @@
 $("body").css("background-color","rgb(245,245,245)")
 
-$.getScript("https://situs.xn--stio-vpa.pt/situs/js/frontgate?router", function(){
+$.ajaxSetup({
+	cache: true
+});
 
-	Remote = new Frontgate.Location({
-	    hostname: "xn--stio-vpa.pt",
-	    protocol:  "https:"
-	});
+$.getScript("https://situs.pt/frontgate/and/router", function(){
 
 	Situs = new Frontgate.Location({
-	    hostname: "situs.xn--stio-vpa.pt",
+	    hostname: "situs.pt",
 	    protocol:  "https:"
 	});
 
-	Remote.sync(
-		"jquery-ui/jquery-ui-1.10.2.custom/js/jquery-ui-1.10.2.custom.js",
-		"topzindex/1.2/jquery.topzindex.js",
-		"jquery.panel/jquery.panel.js",
-	    "jquery.bar/js/bar.js", function(script){
+	Situs.sync("lib/jquery-ui","lib/topzindex","lib/panel",
+		"lib/_", "lib/bar", function(script){
 
 	    // Frontgate router starts to listen to hashchange events
 		Frontgate.router.start();
@@ -29,7 +25,7 @@ $.getScript("https://situs.xn--stio-vpa.pt/situs/js/frontgate?router", function(
 				items: [{
 					el:"img",
 					attr:{
-						src: Remote.href("graphics/Bar/Bar.png")
+						src: Frontgate.href("graphics/Bar.png")
 					}
 				}]
 			})
@@ -197,7 +193,7 @@ $.getScript("https://situs.xn--stio-vpa.pt/situs/js/frontgate?router", function(
 			// with jQuery wrapper
 			// on a toolbar:
 			$("#basic").bar({
-				items:[{ 
+				items:[{
 					text:"is"
 				}]
 			});
