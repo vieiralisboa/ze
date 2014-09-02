@@ -174,6 +174,8 @@ Situs = window.Situs || window.Remote;
 
             // compile code
             Frontgate.router.on('#Minify/compile', function(hash){
+                var Minify = Frontgate.Apps("CC-UI");
+
                 // Minify controller auth
                 $.ajaxSetup({ beforeSend: Minify.API.xhrAuth() });
 
