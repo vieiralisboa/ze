@@ -44,10 +44,9 @@ Situs = window.Situs || window.Remote;
                 // add toolbox toggler
                 Frontgate.Apps("Minify").toolbox.App.panelToggle = Minify.panelToggle;
 
+                // File Uploader
                 Minify.uploader.API = Minify.API;
                 Minify.uploader.url = Minify.API.href('closure_compiler');
-
-                // File Uploader
                 $('#file-upload').uploader(Minify.uploader);
 
                 // uploader form
@@ -129,7 +128,6 @@ Situs = window.Situs || window.Remote;
             // upload js script (click event)
             bar.$bar.find('a[href="#Minify/upload"]').click(function(hash){
                 $('#file-upload').find('input').first().click();
-
                 // cancel location hash change
                 return false;
             });
@@ -137,7 +135,6 @@ Situs = window.Situs || window.Remote;
             // upload js script (route event)
             Frontgate.router.on('#Minify/upload', function(hash){
                 $('#file-upload').find('input').first().click();
-
                 // restore hash
                 location.hash = "Minify";
             });
@@ -196,7 +193,7 @@ Situs = window.Situs || window.Remote;
                         location.hash = 'Minify/minified';
                         $('#download-file').show();
 
-                        var file = Minify.API.hrefAuth('/download/min-' +  res.file);
+                        var file = Minify.API.hrefAuth('/closure_compiler/download/min-' +  res.file);
                         document.getElementById("download-file")
                             .setAttribute('href', file);
                     }
@@ -334,8 +331,8 @@ Situs = window.Situs || window.Remote;
             //console.info('success',this,res);
 
 //TODO Remote -> remote location from html header (to replace Situs)
-            var file = $('html').attr('data-situs')
-                + '/closure_compiler/download/min-' + res.file;
+            var file = Frontgate.Apps("CC-UI").API.hrefAuth()
+                +'closure_compiler/download/min-' + res.file;
             document.getElementById("download-file")
                 .setAttribute('href', file);
         }
