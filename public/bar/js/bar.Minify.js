@@ -325,7 +325,7 @@ Situs = window.Situs || window.Remote;
             //console.info('success',this,res);
 
 //TODO Remote -> remote location from html header (to replace Situs)
-            var file = Situs.href('/download/min-' + res.file);
+            var file = this.API.href('/closure-compiler/download/min-' + res.file);
             document.getElementById("download-file")
                 .setAttribute('href', file);
         }

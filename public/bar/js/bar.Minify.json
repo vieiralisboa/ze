@@ -1,6 +1,6 @@
 {
 	"name": "Minify",
-	"description": "UI for Closer Compiler. Minify JavaScript code.",
+	"description": "Minify is a UI for Closer Compiler. Minify JavaScript code.",
 
 	"items": [{
 		"el": "div",
