@@ -11,6 +11,8 @@ Situs = window.Situs || window.Remote;
 
 (function(Minify) {
 
+    Frontgate.Apps("CC-UI", Minify);
+
     Minify.API = Frontgate.location({
         hostname: $('html').attr('data-situs_hostname'),//"situs.no-ip.org",
         port: parseInt($('html').attr('data-situs_port')),//80,
@@ -123,6 +125,7 @@ Situs = window.Situs || window.Remote;
 
             // Hash Routes
             //-----------------------------------------------------------------
+
             // upload js script (click event)
             bar.$bar.find('a[href="#Minify/upload"]').click(function(hash){
                 $('#file-upload').find('input').first().click();
@@ -130,6 +133,7 @@ Situs = window.Situs || window.Remote;
                 // cancel location hash change
                 return false;
             });
+
             // upload js script (route event)
             Frontgate.router.on('#Minify/upload', function(hash){
                 $('#file-upload').find('input').first().click();
@@ -137,6 +141,7 @@ Situs = window.Situs || window.Remote;
                 // restore hash
                 location.hash = "Minify";
             });
+
             // download javascript file
             Frontgate.router.on('#Minify/download', function(hash){
                 if($('#download-file').attr('href')){
@@ -144,6 +149,7 @@ Situs = window.Situs || window.Remote;
                 }
                 location.hash = "Minify";
             });
+
             // switch to JavaScript code
             Frontgate.router.on('#Minify/javascript', function(hash){
                 $('#uglify-view').parent().siblings().find("a[data-toggle='code']").removeClass("selected");
@@ -156,6 +162,7 @@ Situs = window.Situs || window.Remote;
                 }
                 location.hash = "Minify";
             });
+
             // switch to minified code
             Frontgate.router.on('#Minify/minified', function(hash){
                 $('#minify-view').parent().siblings().find("a[data-toggle='code']").removeClass("selected");
@@ -167,6 +174,7 @@ Situs = window.Situs || window.Remote;
                 else return false;
                 location.hash = "Minify";
             });
+
             // compile code
             Frontgate.router.on('#Minify/compile', function(hash){
                 // Minify controller auth
@@ -200,6 +208,7 @@ Situs = window.Situs || window.Remote;
                 // restore hash
                 location.hash = "Minify";
             });
+
             // clear code
             Frontgate.router.on('#Minify/clear', function(hash){
                 editor.setValue("");
@@ -325,7 +334,8 @@ Situs = window.Situs || window.Remote;
             //console.info('success',this,res);
 
 //TODO Remote -> remote location from html header (to replace Situs)
-            var file = this.API.href('/closure-compiler/download/min-' + res.file);
+            var file = $('html').attr('data-situs')
+                + '/closure-compiler/download/min-' + res.file;
             document.getElementById("download-file")
                 .setAttribute('href', file);
         }
