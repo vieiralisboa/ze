@@ -335,7 +335,7 @@ Situs = window.Situs || window.Remote;
 
 //TODO Remote -> remote location from html header (to replace Situs)
             var file = $('html').attr('data-situs')
-                + '/closure-compiler/download/min-' + res.file;
+                + '/closure_compiler/download/min-' + res.file;
             document.getElementById("download-file")
                 .setAttribute('href', file);
         }
