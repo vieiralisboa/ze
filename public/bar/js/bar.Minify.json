@@ -1,6 +1,6 @@
 {
-	"name": "Minify",
-	"description": "Closer Compiler UI Minify JavaScript code.",
+	"name": "Closer Compiler",
+	"description": "UI for Closer Compiler. Minify JavaScript code.",
 
 	"items": [{
 		"el": "div",
@@ -9,7 +9,7 @@
 			"padding": "0 7px 0 0",
 			"border": "none"
 		},
-		"attr": {	
+		"attr": {
 			"id": "file-upload"
 		}
 	},
@@ -17,19 +17,19 @@
 		"text": "Upload",
 		"attr": {
 			"title": "Upload a JavaScript File",
-			"href": "#Minify/upload" 
+			"href": "#Minify/upload"
 		}
 	},
 	{
 		"text": "Download",
-		"attr": {	
+		"attr": {
 			"id": "download-file",
-			"href": "#Minify/download" 
+			"href": "#Minify/download"
 		}
 	},
 	{
 		"text": "JavaScript",
-		"attr": { 
+		"attr": {
 			"id":"uglify-view",
 			"href": "#Minify/javascript",
 			"data-toggle": "code",
@@ -38,7 +38,7 @@
 	},
 	{
 		"text": "Minified",
-		"attr": { 
+		"attr": {
 			"data-toggle": "code",
 			"id": "minify-view",
 			"href": "#Minify/minified"
@@ -49,9 +49,9 @@
 		"css":{
 			"display": "block"
 		},
-		"attr": { 
+		"attr": {
 			"id": "compile-code",
-			"href": "#Minify/compile" 
+			"href": "#Minify/compile"
 		}
 	},
 	{
