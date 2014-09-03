@@ -834,7 +834,8 @@ Bar.autoLoad.css("videoPlayer");
             hash += '&' + Math.floor(video.currentTime);
             //var url = "https://situs.pt/docs/bar/templates/popup.html" + hash;
             //var url = "https://situs.pt/HTML5/video/popup" + hash;
-            var url = this.API.href("popup" + hash);
+            //var url = "https://situs.pt/myTV/popup" + hash;
+            var url = this.API.href("popup") + hash;
         }
 
         this.stop();
