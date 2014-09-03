@@ -9,14 +9,27 @@
         }
     },
     {
-        "text": "Situs Schema",
+        "text": "Schema",
         "attr":{
-            "href": "https://xn--stio-vpa.pt/situs.schema"
+            "href": "https://situs.pt/controllers/schema/index.html"
         },
         "_attr":{
             "href": "#!Schema"
         }
     },
+    {
+        "text": "Zé",
+        "attr":{
+            "href": "http://ze.xn--stio-vpa.pt"
+        }
+    },
+
+    {
+        "text": "Zé Bar",
+        "attr":{
+            "href": "http://ze.xn--stio-vpa.pt/bar/"
+        }
+        },
     {
         "text": "Frontgate",
         "attr":{
