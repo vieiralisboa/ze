@@ -41,8 +41,6 @@ Bar.autoLoad.css("videoPlayer");
         myTV.templates.ol = template;
     });
 
-    
-
     // 2. Toolbar (Bar)
     //-------------------------------------------------------------------------
     Bar.load('#header', function(bar, data){
@@ -179,7 +177,7 @@ Bar.autoLoad.css("videoPlayer");
 
         // link not found
         if(!$el.length) return;
-        
+
         var time = Math.floor(this.video.currentTime),// current video time
             EPG = $(this.video).attr('data-EPG'),// Listing name
             name = $(this.video).attr('data-name');// video name (not used?)
@@ -189,7 +187,7 @@ Bar.autoLoad.css("videoPlayer");
 
         // save current video time on the link
         $el.attr('data-time', time);
-        
+
         // save current video time in local Storage
         this.listing[EPG][name] = time;
         var items = {};
@@ -203,7 +201,7 @@ Bar.autoLoad.css("videoPlayer");
 
     fullscreen :function(el){
         // Mozilla
-        if(el.mozRequestFullScreen) 
+        if(el.mozRequestFullScreen)
             el.mozRequestFullScreen();
         // Webkit for video elements only
         else if(el.webkitRequestFullscreen)
@@ -285,9 +283,9 @@ Bar.autoLoad.css("videoPlayer");
         // the video is playing or paused
         if(video.currentTime != 0){
             var localFile = $(video).attr('data-EPG') == 'file' ? true : false;
-            // current playing video's trigger element selector 
+            // current playing video's trigger element selector
             var trigger = 'a.video-show[data-id=' + $(video).attr('data-id') +']';
-            
+
             // save current video position in its trigger element
             $(trigger).attr('data-time', 0);
             video.pause();
@@ -296,7 +294,7 @@ Bar.autoLoad.css("videoPlayer");
             //HACK force browsers to stop downloading
             video.autoplay = false;
             video.src = '';//null;
-            
+
             if(this.videoPanel.$panel.is(':visible')) this.videoPanel.$panel.toggle();
 
             $('#myTV-icon').fadeOut();
@@ -305,13 +303,13 @@ Bar.autoLoad.css("videoPlayer");
             if(localFile) return;
 
             var EPG = $(trigger).attr('data-EPG');
-            
+
             // remove this source from saved videos
             delete this.listing[EPG][$(trigger).attr('data-src')];
             this.localStorage.setItem(EPG, JSON.stringify(this.listing[EPG]));
             this.localStorage.removeItems(['last'+EPG+'Name', 'last'+EPG+'Src', 'last'+EPG+'Time']);
             this.unselectShow(true);
-            
+
             location.hash = 'VideoPlayer';
         }
     },
@@ -322,7 +320,7 @@ Bar.autoLoad.css("videoPlayer");
         $('a.video-show.selected').removeClass('selected')
             .siblings('img.wait').removeClass('visible').addClass('hidden');
     },
-    
+
     // EPG video show
     //-------------------------------------------------------------------------
     selectShow: function(el){
@@ -334,12 +332,12 @@ Bar.autoLoad.css("videoPlayer");
         // EPG element is already selected
         if($(el).hasClass('selected')){
             var video = this.video;
-            if(!this.videoPanel.$panel.is(':visible')) 
+            if(!this.videoPanel.$panel.is(':visible'))
                 this.videoPanel.toggle(false, function(){
                     video.play();
                 });
-            return false; 
-        } 
+            return false;
+        }
 
         // get video src from EPG element
         var src = $(el).attr('data-src');
@@ -351,9 +349,9 @@ Bar.autoLoad.css("videoPlayer");
         else if(src.match(/^show/i)){
             src = src.replace("\\","/");
             src = this.API.hrefAuth(src);
-        } 
+        }
         else return;
-        
+
         var data = {
             src: src,
             'data-id':  $(el).attr('data-id'),
@@ -364,8 +362,8 @@ Bar.autoLoad.css("videoPlayer");
             'data-src': $(el).attr('data-src'),
             'data-m4v': $(el).attr('data-m4v')
         };
-       
-        //TODO to be called from hashRouter play(el, hrefAuth('myTV/show/video.source.mp4'))  
+
+        //TODO to be called from hashRouter play(el, hrefAuth('myTV/show/video.source.mp4'))
         this.play(data, function(result, myTV){// window is <this>
             // select show trigger el
             $(el).addClass('selected').siblings('img.wait')
@@ -385,7 +383,7 @@ Bar.autoLoad.css("videoPlayer");
             return;
         }
 
-        // .select element and set video width 
+        // .select element and set video width
         $(el).siblings('.panel-control[data-toggle=width]').removeClass('selected');
         $(el).addClass('selected');
         $(this.video).attr('width', width);
@@ -396,9 +394,9 @@ Bar.autoLoad.css("videoPlayer");
     getVideoList: function(url, callback){
         // ajax screen
         $('#epg-blocker').css('cursor','wait').fadeIn();
-        
+
         var self = this;
-        
+
         //console.info("getVideoList", url);
 
         $.ajax({
@@ -414,7 +412,7 @@ Bar.autoLoad.css("videoPlayer");
             },
             success: function(list){
                 callback(list);
-                
+
                 // ajax screen
                 $('#epg-blocker').css('cursor','default').fadeOut();
             }
@@ -428,7 +426,7 @@ Bar.autoLoad.css("videoPlayer");
         if(!$panel.is(':visible')){
             $panel.fadeIn();
         }
-        
+
         if( $panel.css("z-index") < $.topZIndex()) $panel.topZIndex();
     },
 
@@ -440,7 +438,7 @@ Bar.autoLoad.css("videoPlayer");
 
         // there's no video src in storage
         if(!localStorage.getItem('last'+EPG+'Src')) return;
-        
+
         this.selectShow($('.video-show[data-name="'
             + this.localStorage.getItem('last'+EPG+'Name') +'"]').get(0));
     },
@@ -452,7 +450,7 @@ Bar.autoLoad.css("videoPlayer");
         this.togglePanel($("#epg-panel"));
 
         //console.info("loadEPG:", arguments);
-        
+
         // toogle playlist
         if(this.selectEPG[EPG]) this.toggleEPG(EPG);
         // or load playlist
@@ -495,7 +493,7 @@ Bar.autoLoad.css("videoPlayer");
 
         // get saved (show) time positions
         this.listing[EPG] = $.parseJSON(this.localStorage.getItem(EPG)) || {};
-        
+
         // delete shows no longer in the list
         for(var l in this.listing[EPG]) {
             var deleteName = true;
@@ -507,14 +505,14 @@ Bar.autoLoad.css("videoPlayer");
             }
             if(deleteName) delete this.listing[EPG][l];
         }
-        
+
         var N = 128;
         if(list.length > N) list = list.slice(0, N);
-        
+
         for(var n in list){
             if(EPG == "movies/2013" || EPG == "movies/2014"){
                 var show = list[n].name.match(/^(.*)\W(20\d\d)\W([0-9]{2,3}0p)(\W(.*))?$/i);//1080,720,480
-                if(show) {   
+                if(show) {
                 	list[n].show = show[1];
                 	list[n].episode = null,
                 	list[n].S = show[2];
@@ -539,7 +537,7 @@ Bar.autoLoad.css("videoPlayer");
                 	};
                 	else return {};
             	})(list[n].name);
-                
+
            		list[n].show = show.show || list[n].name;
             	list[n].episode = show.episode,
             	list[n].S = show.S;
@@ -661,14 +659,14 @@ Bar.autoLoad.css("videoPlayer");
     videoPanel: (function(){
         $('#tv-panel').panel({
             hide: true,// Panel will not show at start up
-            name: { 
+            name: {
                 text:'myVideo',
                 //html: '<em>my</em><b>TV</b>',
                 css:{
                     color: 'rgba(250,200,150,.75)',
                     display: 'none',
                     cssfloat: 'left'
-                } 
+                }
             },
             close:{
                 //TODO use router
@@ -698,7 +696,7 @@ Bar.autoLoad.css("videoPlayer");
                     cursor: 'pointer',
                     display: 'none'
                 },
-                
+
                 attr: {
                     'data-control':'HD',
                     title: 'High Definition',
@@ -751,7 +749,7 @@ Bar.autoLoad.css("videoPlayer");
                         var v = url.match(/v=(.*)$/);
                         var src = 'http://www.youtube.com/embed/'+v[1]+'?html5=1';
                         videoPlayer.newWindow(src, 'TV');
-                    };   
+                    };
 
                     videoPlayer.saveCurrentTime(videoPlayer.video);
                     videoPlayer.setup({
@@ -779,7 +777,7 @@ Bar.autoLoad.css("videoPlayer");
                     Frontgate.Apps('myTV').popup();
                 }
             },
-            
+
             {
                 text: 'Stop',
                 click: function(){
@@ -794,7 +792,7 @@ Bar.autoLoad.css("videoPlayer");
             });
         },
         function(){
-            $(this).css({ 
+            $(this).css({
                 cursor: 'default'
             });
         })
@@ -810,14 +808,14 @@ Bar.autoLoad.css("videoPlayer");
 
     // Video Screen
     video: $('<video controls>').attr('type', "video/mp4").appendTo("#tv-panel-span").get(0),
-    
+
     // window popup
     newWindow: function(url, name){
         // pop-up window|dialog,modal,fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,
         var newWindow = window.open(url, name, 'resizable=no, height=270, width=480');
         if (window.focus) newWindow.focus();
     },
-    
+
     // Video popup
     popup: function(video){
         video = video || this.video;
@@ -834,7 +832,9 @@ Bar.autoLoad.css("videoPlayer");
             var hash = '#';
             hash += video.src.replace(/\w+\:\w+\@/, '');
             hash += '&' + Math.floor(video.currentTime);
-            var url = "https://situs.pt/docs/bar/templates/popup.html" + hash;
+            //var url = "https://situs.pt/docs/bar/templates/popup.html" + hash;
+            //var url = "https://situs.pt/HTML5/video/popup" + hash;
+            var url = this.API.href("popup" + hash);
         }
 
         this.stop();
@@ -857,7 +857,7 @@ Bar.autoLoad.css("videoPlayer");
         var name = folder.replace(/\.S[0-9]+$/i, '');
 
         name = name.replace(/\.+/g, ' ');
-        
+
         var season = folder.match(/S([0-9]+)$/i);
         if(season) season = ' Season '+ parseInt(season[1]);
         else season = '';
@@ -913,13 +913,13 @@ Bar.autoLoad.css("videoPlayer");
 
         var videoWidth = this.videoWidth;
         var videoHeight = this.videoHeight;
-        
+
         // set video screen width
         if(this.videoWidth >= 1280){
             videoWidth = 854;
             videoHeight = (videoHeight*videoWidth)/this.videoWidth;
         }
-        
+
         $(videoPlayer.video).attr('width', videoWidth+'px');
         $(videoPlayer.video).attr('height', videoHeight +'px');
 
@@ -945,7 +945,7 @@ Bar.autoLoad.css("videoPlayer");
         playing = 'Playing: '+ playing[playing.length-1];
         videoPlayer.info(playing+"\nDuration: "+Math.round(videoPlayer.video.duration/60) +' minutes');*/
     },
-    
+
     status: null,
 
     updateToolboxItems: function(auth, user){
@@ -984,7 +984,7 @@ Bar.autoLoad.css("videoPlayer");
         });
 
     },
-    
+
     toolbar: {
         items: [{
             el: "img",
