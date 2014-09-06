@@ -119,7 +119,7 @@ Bar.autoLoad.css("videoPlayer");
     //4. Routes
     //-------------------------------------------------------------------------
     // remote video
-    Frontgate.router.on(myTV.hash('show/:folder/:video'), function(hash){
+    Frontgate.router.on(myTV.hash('video/:folder/:video'), function(hash){
         var href = "a.video-show[href='%href%']"
             .replace("%href%", hash.res[0])
             .replace("\\","\\\\");
@@ -346,9 +346,9 @@ Bar.autoLoad.css("videoPlayer");
         if(src.match(/^http/i)){
             //
         }
-        else if(src.match(/^show/i)){
+        else if(src.match(/^video/i)){
             src = src.replace("\\","/");
-            src = this.API.hrefAuth(src);
+            src = "https://situs.pt/VideoPlayer/" + src;
         }
         else return;
 
@@ -506,11 +506,11 @@ Bar.autoLoad.css("videoPlayer");
             if(deleteName) delete this.listing[EPG][l];
         }
 
-        var N = 128;
-        if(list.length > N) list = list.slice(0, N);
+        //var N = 128;
+        //if(list.length > N) list = list.slice(0, N);
 
         for(var n in list){
-            if(EPG == "movies/2013" || EPG == "movies/2014"){
+            if(EPG == "movies/2012" || EPG == "movies/2013" || EPG == "movies/2014"){
                 var show = list[n].name.match(/^(.*)\W(20\d\d)\W([0-9]{2,3}0p)(\W(.*))?$/i);//1080,720,480
                 if(show) {
                 	list[n].show = show[1];
@@ -542,7 +542,6 @@ Bar.autoLoad.css("videoPlayer");
             	list[n].episode = show.episode,
             	list[n].S = show.S;
             	list[n].E = show.E;
-
         	}
         }
 
@@ -557,6 +556,24 @@ Bar.autoLoad.css("videoPlayer");
 
         $('ol.epg-list li[data-cc=true] span.closed-caption').removeClass('hidden');
         $('ol.epg-list li[data-hd=true] span.high-def').removeClass('hidden');
+
+        var API = this.API;
+        var $poster = $("ol.epg-list img.poster");
+
+        //$("ol.epg-list li[data-poster!='false']")
+        $("ol.epg-list li")
+            //.removeClass('hidden')
+            .hover(function(e){
+                //$poster = $(this).parent().find("img.poster");
+
+                if($(this).attr("data-poster") == "false") $poster.fadeOut();
+                else $poster.attr("src", "https://situs.pt/VideoPlayer/" + $(this).attr("data-poster") )
+                    .fadeIn();
+            });
+
+        $("ol.epg-list").hover(function(){}, function(){
+            $poster.fadeOut();
+        });
 
         return $list;
     },
@@ -617,6 +634,7 @@ Bar.autoLoad.css("videoPlayer");
         this.vtt = show.vtt || false;
         this.cc = this.vtt ? true : false;
         this.m4v = show.m4v ? true : false;
+        this.poster = show.poster || false;
     },
 
     // EPG Panel
@@ -835,7 +853,7 @@ Bar.autoLoad.css("videoPlayer");
             //var url = "https://situs.pt/docs/bar/templates/popup.html" + hash;
             //var url = "https://situs.pt/HTML5/video/popup" + hash;
             //var url = "https://situs.pt/myTV/popup" + hash;
-            var url = this.API.href("popup") + hash;
+            var url = "https://situs.pt/VideoPlayer/popup" + hash;
         }
 
         this.stop();
@@ -1039,6 +1057,7 @@ Bar.autoLoad.css("videoPlayer");
             // Private playlists
             //VideoPlayer.myBookLiveTV('tv-shows/Adventure.Time.S05');
             VideoPlayer.myBookLiveTV('NEW');
+            VideoPlayer.myBookLiveTV('movies/2012');
             VideoPlayer.myBookLiveTV('movies/2013');
             VideoPlayer.myBookLiveTV('movies/2014');
 
