@@ -1,24 +1,26 @@
 {
 	"name": "Home",
-	"description": "Frontgate JavaScript Library",
+	"description": "Frontgate Bar. Home page for Frontgate JavaScript library and boilerplate for JS Bar",
 
 	"items": [{
 		"text": "Frontgate",
 		"attr": {
-			"title": "Straighforward Usage",
-			"href": "frontgate/index.html"
+			"title": "Frontgate JS Library",
+			"href": "#Frontgate",
+			"_href": "frontgate/index.html"
 		}
 	},
 	{
-		"text": "Router",
+		"text": "Bar",
 		"attr": {
-			"href": "#Frontgate/router"
+			"href": "#Bar",
+
 		}
 	},
 	{
 		"text": "Situs",
-		"attr": { 
-			"href": "#Frontgate/situs"
+		"attr": {
+			"href": "#Situs"
 		}
 	}]
 }
