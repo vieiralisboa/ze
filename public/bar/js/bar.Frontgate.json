@@ -6,7 +6,7 @@
 		"text": "Frontgate",
 		"attr": {
 			"title": "Frontgate JS Library",
-			"href": "#Frontgate",
+			"href": "#Frontgate/library",
 			"_href": "frontgate/index.html"
 		}
 	},
@@ -14,13 +14,14 @@
 		"text": "Bar",
 		"attr": {
 			"href": "#Bar",
-
+			"title": "Zé Bar"
 		}
 	},
 	{
 		"text": "Situs",
 		"attr": {
-			"href": "#Situs"
+			"href": "#Situs/Framework",
+			"title": "Situs PHP Framework"
 		}
 	}]
 }
