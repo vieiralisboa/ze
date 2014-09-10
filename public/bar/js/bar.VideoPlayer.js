@@ -14,6 +14,10 @@ Bar.autoLoad.css("videoPlayer");
 //Bar.load.css("videoPlayer");
 
 (function(myTV){
+
+    myTV.remote.hostname = $("html").attr("data-situs_hostname") || myTV.remote.hostname;
+    myTV.remote.protocol = $("html").attr("data-situs_protocol") || myTV.remote.protocol;
+
     // myTV controller
     myTV.API = Frontgate.location(myTV.remote);
 
