@@ -5,8 +5,10 @@ Remote = window.Remote || Frontgate.location({
     protocol: "http:"
 });
 
-Situs = window.Situs || Remote;
-
+Situs = window.Situs || Frontgate.location({
+    hostname: $("html").attr("data-situs_hostname"),
+    protocol: $("html").attr("data-situs_protocol")
+});
 //Remote.stylesheet("bar/css/videoPlayer");
 Bar.autoLoad.css("videoPlayer");
 
@@ -153,10 +155,10 @@ Bar.autoLoad.css("videoPlayer");
     });//*/
 })({
     appName: "Video Player",
-    version: [0, 7, 1],
+    version: [0, 7, 2],
     remote: {
-        hostname: "situs.pt",
-        protocol: "https:",
+        hostname: $("html").attr('data-situs_hostname'),
+        protocol: $("html").attr('data-situs_protocol'),
         pathname: "/myTV"
     },
     hash: function(route){
@@ -234,7 +236,6 @@ Bar.autoLoad.css("videoPlayer");
             $(this.video).append($('<track>')
                     .addClass('vtt').attr({
                 src: attr['data-vtt'],
-                //src:"http://xn--stio-vpa.pt/VideoPlayer/Turbo.2013.720p.BluRay.x264.YIFY.vtt",
                 kind: "subtitles",
                 srclang: "pt",
                 default: "default",
@@ -352,7 +353,7 @@ Bar.autoLoad.css("videoPlayer");
         }
         else if(src.match(/^video/i)){
             src = src.replace("\\","/");
-            src = "https://situs.pt/VideoPlayer/" + src;
+            src = Situs.href("VideoPlayer/") + src;
         }
         else return;
 
@@ -450,8 +451,14 @@ Bar.autoLoad.css("videoPlayer");
     // Select EPG playList
     //-------------------------------------------------------------------------
     selectEPG: function(EPG, href){
+        var $panel = $("#epg-panel");
+
         // show EPG panel
-        this.togglePanel($("#epg-panel"));
+        this.togglePanel($panel);
+
+        var epg = $("a[data-epg='"+EPG+"'] ").html();
+
+        $panel.find("ul.panel-header li:first").html(epg);
 
         //console.info("loadEPG:", arguments);
 
@@ -563,16 +570,22 @@ Bar.autoLoad.css("videoPlayer");
 
         var API = this.API;
         var $poster = $("ol.epg-list img.poster");
+        //$("ol.epg-list li.epg-title").html(EPG);
 
         //$("ol.epg-list li[data-poster!='false']")
         $("ol.epg-list li")
             //.removeClass('hidden')
             .hover(function(e){
-                //$poster = $(this).parent().find("img.poster");
-
-                if($(this).attr("data-poster") == "false") $poster.fadeOut();
-                else $poster.attr("src", "https://situs.pt/VideoPlayer/" + $(this).attr("data-poster") )
-                    .fadeIn();
+                if($(this).attr("data-poster") == "false") $(this).find("img.poster").fadeOut();
+                else {
+                    var $img = $(this).find("img.poster");
+                    if(!$img.attr("src")) {
+                        $img.attr("src", Situs.href("VideoPlayer/")
+                            + $(this).attr("data-poster"));
+                    }
+                    $poster.hide();
+                    $img.show();
+                }
             });
 
         $("ol.epg-list").hover(function(){}, function(){
@@ -594,6 +607,7 @@ Bar.autoLoad.css("videoPlayer");
             text: playlist.name,
             css: {},
             attr: {
+                'data-epg': playlist.EPG,
                 'data-toggle': 'playlist',
                 'class': cssClass,
                 href: '#VideoPlayer/EPG/' + playlist.EPG,
@@ -854,10 +868,7 @@ Bar.autoLoad.css("videoPlayer");
             var hash = '#';
             hash += video.src.replace(/\w+\:\w+\@/, '');
             hash += '&' + Math.floor(video.currentTime);
-            //var url = "https://situs.pt/docs/bar/templates/popup.html" + hash;
-            //var url = "https://situs.pt/HTML5/video/popup" + hash;
-            //var url = "https://situs.pt/myTV/popup" + hash;
-            var url = "https://situs.pt/VideoPlayer/popup" + hash;
+            var url = Situs.href("VideoPlayer/popup") + hash;
         }
 
         this.stop();
@@ -875,11 +886,13 @@ Bar.autoLoad.css("videoPlayer");
         video.controls = video.controls ? false : true;
     },
 
-    myBookLiveTV: function(folder){
+    myBookLiveTV: function(folder, name){
         if(!folder || !folder.match(/^.*$/)) return false;
-        var name = folder.replace(/\.S[0-9]+$/i, '');
 
-        name = name.replace(/\.+/g, ' ');
+        if(!name) {
+            name = folder.replace(/\.S[0-9]+$/i, '');
+            name = name.replace(/\.+/g, ' ');
+        }
 
         var season = folder.match(/S([0-9]+)$/i);
         if(season) season = ' Season '+ parseInt(season[1]);
@@ -1051,7 +1064,7 @@ Bar.autoLoad.css("videoPlayer");
             });
 
             // Playlists
-            VideoPlayer.playList({
+            if(false) VideoPlayer.playList({
                 url: '/study/Movies/public-tv-AndyGriffithShow.json',
                 name: 'The Andy Griffith Show',
                 title: "Public Domain Sitcoms",
@@ -1060,10 +1073,11 @@ Bar.autoLoad.css("videoPlayer");
 
             // Private playlists
             //VideoPlayer.myBookLiveTV('tv-shows/Adventure.Time.S05');
-            VideoPlayer.myBookLiveTV('NEW');
-            VideoPlayer.myBookLiveTV('movies/2012');
-            VideoPlayer.myBookLiveTV('movies/2013');
-            VideoPlayer.myBookLiveTV('movies/2014');
+            VideoPlayer.myBookLiveTV('NEW', "New");
+            VideoPlayer.myBookLiveTV('tv-shows/Masters_of_Sex/S1', "Masters of Sex/1");
+            VideoPlayer.myBookLiveTV('movies/2012', "Movies/2012");
+            VideoPlayer.myBookLiveTV('movies/2013', "Movies/2013");
+            VideoPlayer.myBookLiveTV('movies/2014', "Movies/2014");
 
             var offset = $('#body div.bar').offset();
             $('#epg-panel, #tv-panel')
