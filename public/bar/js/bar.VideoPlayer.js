@@ -1074,7 +1074,7 @@ Bar.autoLoad.css("videoPlayer");
             // Private playlists
             //VideoPlayer.myBookLiveTV('tv-shows/Adventure.Time.S05');
             VideoPlayer.myBookLiveTV('NEW', "New");
-            VideoPlayer.myBookLiveTV('tv-shows/Masters_of_Sex/S1', "Masters of Sex/1");
+            VideoPlayer.myBookLiveTV('tv-shows/Masters_of_Sex/S2', "Masters of Sex/2");
             VideoPlayer.myBookLiveTV('movies/2012', "Movies/2012");
             VideoPlayer.myBookLiveTV('movies/2013', "Movies/2013");
             VideoPlayer.myBookLiveTV('movies/2014', "Movies/2014");
