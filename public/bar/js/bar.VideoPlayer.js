@@ -462,16 +462,15 @@ Bar.autoLoad.css("videoPlayer");
 
         //console.info("loadEPG:", arguments);
 
-        // toogle playlist
+        // toogle playlist or load playlist
         if(this.selectEPG[EPG]) this.toggleEPG(EPG);
-        // or load playlist
         else this.loadEPG(EPG, href);
     },
 
     toggleEPG: function(EPG, href){
         $('.epg-list').removeClass('selected');
         this.selectEPG[EPG].addClass('selected');
-        this.autoPlayEPG(EPG);
+        //this.autoPlayEPG(EPG);
     },
 
     // loads EPG playList from sever
