@@ -1070,13 +1070,11 @@ Bar.autoLoad.css("videoPlayer");
                 EPG: 'PublicAndyGriffithShow'
             });
 
-            // Private playlists
-            //VideoPlayer.myBookLiveTV('tv-shows/Adventure.Time.S05');
-            VideoPlayer.myBookLiveTV('NEW', "New");
-            VideoPlayer.myBookLiveTV('tv-shows/masters_of_sex/S2', "Masters of Sex/2");
-            VideoPlayer.myBookLiveTV('movies/2012', "Movies/2012");
-            VideoPlayer.myBookLiveTV('movies/2013', "Movies/2013");
-            VideoPlayer.myBookLiveTV('movies/2014', "Movies/2014");
+            // Private playlists (MyBook Live)
+            var mbl = JSON.parse(FILE.json).myBookLive;
+            for(var i=0; i< mbl.length; i++){
+                VideoPlayer.myBookLiveTV(mbl[i][0], mbl[i][1]);
+            }
 
             var offset = $('#body div.bar').offset();
             $('#epg-panel, #tv-panel')

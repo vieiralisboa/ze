@@ -9,8 +9,8 @@
                 "type": "file",
                 "accept": "video/*"
             },
-            "css": { 
-                "display": "none" 
+            "css": {
+                "display": "none"
             }
         },
         {
@@ -20,5 +20,13 @@
                 "id": "video-browse"
             }
         }
-    ]     
+    ],
+    "myBookLive":[
+        ["NEW", "New"],
+        ["tv-shows/masters_of_sex/S2", "Masters of Sex/2"],
+        ["movies/2012", "Movies/2012"],
+        ["movies/2013", "Movies/2013"],
+        ["movies/2014", "Movies/2014"],
+        ["transmission", "Transmission"]
+    ]
 }
