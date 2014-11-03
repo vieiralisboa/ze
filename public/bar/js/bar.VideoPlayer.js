@@ -77,8 +77,8 @@ Bar.autoLoad.css("videoPlayer");
     myTV.video.addEventListener('ended', function() {
         var el = myTV.getNext();
         myTV.stop(this);
-        myTV.info('');
-        myTV.log('Video Show Ended');
+        //myTV.info('');
+        //myTV.log('Video Show Ended');
         myTV.selectShow(el);
     }, false);
 
