@@ -76,10 +76,10 @@ Bar.autoLoad.css("videoPlayer");
     // video end
     myTV.video.addEventListener('ended', function() {
         var el = myTV.getNext();
-        myTV.stop(this);
+        if(typeof el == "undefined") myTV.stop(this);
+        else myTV.selectShow(el);
         //myTV.info('');
         //myTV.log('Video Show Ended');
-        myTV.selectShow(el);
     }, false);
 
     // window unload
