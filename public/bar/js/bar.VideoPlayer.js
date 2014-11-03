@@ -973,20 +973,22 @@ Bar.autoLoad.css("videoPlayer");
         }
         else $hd.css('display', 'none');
 
+        //----------------------------------------------------------------------------------------------------------
         var videoWidth = this.videoWidth;
         var videoHeight = this.videoHeight;
-
         // set video screen width
         if(this.videoWidth >= 1280){
             videoWidth = 854;
             videoHeight = (videoHeight*videoWidth)/this.videoWidth;
         }
-
         $(videoPlayer.video).attr('width', videoWidth+'px');
         $(videoPlayer.video).attr('height', videoHeight +'px');
 
         //videoPlayer.videoPanel.$panel.height(this.videoHeight);
-        videoPlayer.videoPanel.$panel.height($(videoPlayer.video).height());
+        var panelHeight = $(videoPlayer.video).height();
+        if(panelHeight != window.screen.height) {
+            videoPlayer.videoPanel.$panel.height($(videoPlayer.video).height());
+        }
 
         // hide ajax gif from EPG panel
         $('a.video-show.selected').siblings('img.wait').removeClass('visible').addClass('hidden');
