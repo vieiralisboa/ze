@@ -75,9 +75,11 @@ Bar.autoLoad.css("videoPlayer");
 
     // video end
     myTV.video.addEventListener('ended', function() {
+        var el = myTV.getNext();
         myTV.stop(this);
         myTV.info('');
         myTV.log('Video Show Ended');
+        myTV.selectShow(el);
     }, false);
 
     // window unload
@@ -330,7 +332,9 @@ Bar.autoLoad.css("videoPlayer");
     },
 
     getNext: function(){
-        return $('a.video-show.selected').parent().next().find("a.video-show");
+        var $a = $('a.video-show.selected').parent().next().find("a.video-show");
+        if (!$a.length) return;
+        return $a[0];
     },
 
     play$a: function($a){
