@@ -75,10 +75,7 @@ Bar.autoLoad.css("videoPlayer");
 
     // video end
     myTV.video.addEventListener('ended', function() {
-
-        //myTV.stop(this);
-        myTV.selectNext();
-
+        myTV.stop(this);
         myTV.info('');
         myTV.log('Video Show Ended');
     }, false);
@@ -332,12 +329,8 @@ Bar.autoLoad.css("videoPlayer");
             .siblings('img.wait').removeClass('visible').addClass('hidden');
     },
 
-    selectNext: function(){
-        var $a = $('a.video-show.selected').parent().next().find("a.video-show");
-
-        if(!$a.length) return;
-
-        this.play$a($a[0]);
+    getNext: function(){
+        return $('a.video-show.selected').parent().next().find("a.video-show");
     },
 
     play$a: function($a){
