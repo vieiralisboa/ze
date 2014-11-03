@@ -382,7 +382,7 @@ Bar.autoLoad.css("videoPlayer");
             $a.addClass('selected').siblings('img.wait')
                 .removeClass('hidden').addClass('visible');
         });
-    }
+    },
 
     // EPG video show
     //------------------------------------------------------------------------------------------------------------------
