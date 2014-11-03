@@ -75,9 +75,8 @@ Bar.autoLoad.css("videoPlayer");
 
     // video end
     myTV.video.addEventListener('ended', function() {
-        var el = myTV.getNext();
-        if(typeof el == "undefined") myTV.stop(this);
-        else myTV.selectShow(el);
+        myTV.videoEnded = true;
+        myTV.stop(this);
         //myTV.info('');
         //myTV.log('Video Show Ended');
     }, false);
@@ -257,6 +256,7 @@ Bar.autoLoad.css("videoPlayer");
         // play
         this.videoPanel.publishEvent('play');
         this.video.play();
+        this.setNext();
 
     },
 
@@ -283,6 +283,8 @@ Bar.autoLoad.css("videoPlayer");
         $(this.video).attr(new this.VideoData(attr));
     },
 
+    videoEnded: false,
+    nextVideo: null,
     // Stop the video (rewind to 0)
     //------------------------------------------------------------------------------------------------------------------
     stop: function(video){
@@ -296,7 +298,7 @@ Bar.autoLoad.css("videoPlayer");
             // current playing video's trigger element selector
             var trigger = 'a.video-show[data-id=' + $(video).attr('data-id') +']';
 
-            // save current video position in its trigger element
+            // save current video position in its element
             $(trigger).attr('data-time', 0);
             video.pause();
             video.currentTime = 0;
@@ -305,22 +307,27 @@ Bar.autoLoad.css("videoPlayer");
             video.autoplay = false;
             video.src = '';//null;
 
-            if(this.videoPanel.$panel.is(':visible')) this.videoPanel.$panel.toggle();
-
-            $('#myTV-icon').fadeOut();
-
             // a local file is loaded
-            if(localFile) return;
+            if(!localFile) {
+                var EPG = $(trigger).attr('data-EPG');
 
-            var EPG = $(trigger).attr('data-EPG');
+                // remove this source from saved videos
+                delete this.listing[EPG][$(trigger).attr('data-src')];
+                this.localStorage.setItem(EPG, JSON.stringify(this.listing[EPG]));
+                this.localStorage.removeItems(['last'+EPG+'Name', 'last'+EPG+'Src', 'last'+EPG+'Time']);
+                this.unselectShow(true);
 
-            // remove this source from saved videos
-            delete this.listing[EPG][$(trigger).attr('data-src')];
-            this.localStorage.setItem(EPG, JSON.stringify(this.listing[EPG]));
-            this.localStorage.removeItems(['last'+EPG+'Name', 'last'+EPG+'Src', 'last'+EPG+'Time']);
-            this.unselectShow(true);
+                location.hash = 'VideoPlayer';
+            }
 
-            location.hash = 'VideoPlayer';
+            if(this.videoEnded) {
+                if(this.next != "undefined") this.selectShow(this.next);
+                this.videoEnded = false;
+                return;
+            }
+
+            if(this.videoPanel.$panel.is(':visible')) this.videoPanel.$panel.toggle();
+            $('#myTV-icon').fadeOut();
         }
     },
 
@@ -335,6 +342,10 @@ Bar.autoLoad.css("videoPlayer");
         var $a = $('a.video-show.selected').parent().next().find("a.video-show");
         if (!$a.length) return;
         return $a[0];
+    },
+
+    setNext: function(){
+        this.next = this.getNext();
     },
 
     play$a: function($a){
@@ -539,36 +550,36 @@ Bar.autoLoad.css("videoPlayer");
             if(EPG == "movies/2012" || EPG == "movies/2013" || EPG == "movies/2014"){
                 var show = list[n].name.match(/^(.*)\W(20\d\d)\W([0-9]{2,3}0p)(\W(.*))?$/i);//1080,720,480
                 if(show) {
-                	list[n].show = show[1];
-                	list[n].episode = null,
-                	list[n].S = show[2];
-                	list[n].E = " " + show[3];
+                    list[n].show = show[1];
+                    list[n].episode = null,
+                    list[n].S = show[2];
+                    list[n].E = " " + show[3];
                 }
                 else{
                     list[n].show = list[n].name;
-                	list[n].episode = null,
-                	list[n].S = null;
-                	list[n].E = null;
+                    list[n].episode = null,
+                    list[n].S = null;
+                    list[n].E = null;
                 }
             }
             else{
-            	var show = (function(string){
+                var show = (function(string){
                     var show = string.match(/^(.*)\W(S[0-9]{1,2})(E[0-9]{1,2}(E[0-9]{1,2})?)(\W(.*))?$/i);
 
-                	if(show) return {
-                    	show: show[1],
-                    	episode: null,
-                    	E: show[3],
-                    	S: show[2]
-                	};
-                	else return {};
-            	})(list[n].name);
+                    if(show) return {
+                        show: show[1],
+                        episode: null,
+                        E: show[3],
+                        S: show[2]
+                    };
+                    else return {};
+                })(list[n].name);
 
-           		list[n].show = show.show || list[n].name;
-            	list[n].episode = show.episode,
-            	list[n].S = show.S;
-            	list[n].E = show.E;
-        	}
+                list[n].show = show.show || list[n].name;
+                list[n].episode = show.episode,
+                list[n].S = show.S;
+                list[n].E = show.E;
+            }
         }
 
         // ol list from template
