@@ -337,7 +337,7 @@ Bar.autoLoad.css("videoPlayer");
 
         if(!$a.length) return;
 
-        this.play$s($a[0]);
+        this.play$a($a[0]);
     },
 
     play$a: function($a){
