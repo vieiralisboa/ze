@@ -284,7 +284,9 @@ Bar.autoLoad.css("videoPlayer");
     },
 
     videoEnded: false,
+
     nextVideo: null,
+
     // Stop the video (rewind to 0)
     //------------------------------------------------------------------------------------------------------------------
     stop: function(video){
@@ -320,8 +322,8 @@ Bar.autoLoad.css("videoPlayer");
                 location.hash = 'VideoPlayer';
             }
 
-            if(this.videoEnded) {
-                if(this.next != "undefined") this.selectShow(this.next);
+            if(this.videoEnded && this.next != "undefined") {
+                this.selectShow(this.next);
                 this.videoEnded = false;
                 return;
             }
