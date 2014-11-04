@@ -322,7 +322,7 @@ Bar.autoLoad.css("videoPlayer");
                 location.hash = 'VideoPlayer';
             }
 
-            if(this.videoEnded && this.next != "undefined") {
+            if(this.videoEnded && typeof this.next != "undefined") {
                 this.selectShow(this.next);
                 this.videoEnded = false;
                 return;
