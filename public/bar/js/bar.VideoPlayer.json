@@ -22,10 +22,25 @@
         }
     ],
     "myBookLive":[
-        ["NEW", "New"],
-        ["transmission", "Transmission"],
-        ["movies/2012", "Movies/2012"],
-        ["movies/2013", "Movies/2013"],
-        ["movies/2014", "Movies/2014"]
+        {
+            "dir": "NEW",
+            "name": "New"
+        },
+        {
+            "dir": "transmission",
+            "name": "Transmission"
+        },
+        {
+            "dir": "movies/2012",
+            "name": "Movies 2012"
+        },
+        {
+            "dir": "movies/2013",
+            "name": "Movies 2013"
+        },
+        {
+            "dir": "movies/2014",
+            "name": "Movies 2014"
+        }
     ]
 }

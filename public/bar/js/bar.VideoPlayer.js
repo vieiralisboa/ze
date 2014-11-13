@@ -63,8 +63,7 @@ Bar.autoLoad.css("videoPlayer");
         }
 
         // File Input Change
-        document.querySelector('#video-show-input')
-            .addEventListener('change', myTV.playSelectedFile, false);
+        document.querySelector('#video-show-input').addEventListener('change', myTV.playSelectedFile, false);
     }, FILE);
 
     //3. Event lsteners
@@ -74,12 +73,7 @@ Bar.autoLoad.css("videoPlayer");
     myTV.video.addEventListener('loadedmetadata', myTV.loadedMetadata, false);
 
     // video end
-    myTV.video.addEventListener('ended', function() {
-        myTV.videoEnded = true;
-        myTV.stop(this);
-        //myTV.info('');
-        //myTV.log('Video Show Ended');
-    }, false);
+    myTV.video.addEventListener('ended', myTV.ended, false);
 
     // window unload
     $(window).bind('unload', function () {
@@ -127,9 +121,7 @@ Bar.autoLoad.css("videoPlayer");
     //------------------------------------------------------------------------------------------------------------------
     // remote video
     Frontgate.router.on(myTV.hash('video/:folder/:video'), function(hash) {
-        var href = "a.video-show[href='%href%']"
-            .replace("%href%", hash.res[0])
-            .replace("\\","\\\\");
+        var href = "a.video-show[href='%href%']".replace("%href%", hash.res[0]).replace("\\","\\\\");
 
         var el = $(href).get(0);
         myTV.selectShow(el);
@@ -176,6 +168,7 @@ Bar.autoLoad.css("videoPlayer");
     name: function(){
         return this.appName + ' ' + this.version.join(".");
     },
+
     localStorage: myStorage,
     templates: {},
 
@@ -189,7 +182,7 @@ Bar.autoLoad.css("videoPlayer");
         if(!$el.length) return;
 
         var time = Math.floor(this.video.currentTime),// current video time
-            EPG = $(this.video).attr('data-EPG'),// Listing name
+            EPG = $(this.video).attr('data-epg'),// Listing name
             name = $(this.video).attr('data-name');// video name (not used?)
 
         // it's a local file or it's a video from an url
@@ -269,7 +262,7 @@ Bar.autoLoad.css("videoPlayer");
         else this.src = data.src + '.mp4' || '';
 
         this['data-id'] = data['data-id'] || 0;
-        this['data-EPG'] = data['data-EPG'] || '';
+        this['data-epg'] = data['data-epg'] || '';
         this['data-name'] = data['data-name'] || '';
         this['data-vtt'] = data['data-vtt'] || false;
         this['data-time']  = data['data-time'] || 0;
@@ -285,23 +278,19 @@ Bar.autoLoad.css("videoPlayer");
 
     videoEnded: false,
 
-    nextVideo: null,
-
     // Stop the video (rewind to 0)
     //------------------------------------------------------------------------------------------------------------------
     stop: function(video){
         video = video || this.video;
 
         //location.hash = 'VideoPlayer';
+        console.info("stop", video);
 
         // the video is playing or paused
-        if(video.currentTime != 0){
-            var localFile = $(video).attr('data-EPG') == 'file' ? true : false;
-            // current playing video's trigger element selector
-            var trigger = 'a.video-show[data-id=' + $(video).attr('data-id') +']';
+        if(video.currentTime != 0) {
+            var localFile = $(video).attr('data-epg') == 'file' ? true : false;
+            this.$a.attr('data-time', 0);
 
-            // save current video position in its element
-            $(trigger).attr('data-time', 0);
             video.pause();
             video.currentTime = 0;
 
@@ -311,21 +300,28 @@ Bar.autoLoad.css("videoPlayer");
 
             // a local file is loaded
             if(!localFile) {
-                var EPG = $(trigger).attr('data-EPG');
+                var EPG = this.$a.attr('data-epg');//$(trigger).attr('data-epg');
+                var src = this.$a.attr('data-src');
+                var stream = $("#epg-panel ul.panel-header li input[type=checkbox]").is(":checked");
 
                 // remove this source from saved videos
-                delete this.listing[EPG][$(trigger).attr('data-src')];
+                delete this.listing[EPG][src];
+
                 this.localStorage.setItem(EPG, JSON.stringify(this.listing[EPG]));
-                this.localStorage.removeItems(['last'+EPG+'Name', 'last'+EPG+'Src', 'last'+EPG+'Time']);
+
+                // autoload
+                //this.localStorage.removeItems(['last'+EPG+'Name', 'last'+EPG+'Src', 'last'+EPG+'Time']);
+
                 this.unselectShow(true);
 
                 location.hash = 'VideoPlayer';
-            }
 
-            if(this.videoEnded && typeof this.next != "undefined") {
-                this.selectShow(this.next);
-                this.videoEnded = false;
-                return;
+                //TODO get the "transmission" value from config (VideoPlayer.json)
+                if(this.videoEnded && typeof this.next != "undefined" && stream) {
+                    this.selectShow(this.next);
+                    this.videoEnded = false;
+                    return;
+                }
             }
 
             if(this.videoPanel.$panel.is(':visible')) this.videoPanel.$panel.toggle();
@@ -351,14 +347,18 @@ Bar.autoLoad.css("videoPlayer");
     },
 
     play$a: function($a){
+        this.$a = $a;
 
         // EPG item is already selected
         if($a.hasClass('selected')){
             var video = this.video;
-            if(!this.videoPanel.$panel.is(':visible'))
+
+            if(!this.videoPanel.$panel.is(':visible')) {
                 this.videoPanel.toggle(false, function(){
                     video.play();
                 });
+            }
+
             return false;
         }
 
@@ -378,7 +378,7 @@ Bar.autoLoad.css("videoPlayer");
         var data = {
             src: src,
             'data-id':  $a.attr('data-id'),
-            'data-EPG': $a.attr('data-EPG'),
+            'data-epg': $a.attr('data-epg'),
             'data-name':$a.attr('data-name'),
             'data-vtt': $a.attr('data-vtt'),
             'data-time':$a.attr('data-time'),
@@ -389,21 +389,16 @@ Bar.autoLoad.css("videoPlayer");
         //TODO to be called from hashRouter play(el, hrefAuth('myTV/show/video.source.mp4'))
         this.play(data, function(result, myTV){// window is <this>
             // select show trigger el
-            $a.addClass('selected').siblings('img.wait')
-                .removeClass('hidden').addClass('visible');
+            $a.addClass('selected').siblings('img.wait').removeClass('hidden').addClass('visible');
         });
     },
 
     // EPG video show
     //------------------------------------------------------------------------------------------------------------------
     selectShow: function(el){
-        if(!el){
-            //alert("NoEl");
-            return false;
-        }
+        if(!el) return false;
 
         this.play$a($(el));
-
     },
 
     // Video Width
@@ -485,15 +480,16 @@ Bar.autoLoad.css("videoPlayer");
         // show EPG panel
         this.togglePanel($panel);
 
-        var epg = $("a[data-epg='"+EPG+"'] ").html();
+        var $trigger = $("a[data-epg='"+EPG+"'] ");
+        var epg = $trigger.html();
 
         $panel.find("ul.panel-header li:first").html(epg);
 
         //console.info("loadEPG:", arguments);
 
-        // toogle playlist or load playlist
+        // toogle playlist or load playlist from server
         if(this.selectEPG[EPG]) this.toggleEPG(EPG);
-        else this.loadEPG(EPG, href);
+        else this.loadEPG($trigger, href);//EPG, href);
     },
 
     toggleEPG: function(EPG, href){
@@ -502,19 +498,26 @@ Bar.autoLoad.css("videoPlayer");
         //this.autoPlayEPG(EPG);
     },
 
-    // loads EPG playList from sever
+    // loads EPG playList from server
     //------------------------------------------------------------------------------------------------------------------
-    loadEPG: function(EPG, href){
+    loadEPG: function($trigger, href) {//EPG, href){
         var self = this;
+        var EPG = $trigger.attr("data-epg");
 
-        this.getVideoList(href, function(list){
+        // get videos list
+        this.getVideoList(href, function(list) {
             var shows = [];
+
+            // prepare the videos list
             if(list.length) {
                 for(var i in list) {
                     shows.push(new self.Show(list[i]));
                 }
             }
+
+            // make EPG
             self.selectEPG[EPG] = self.makeEPG(EPG, shows);
+            //console.info(EPG, self.selectEPG[EPG]);
             self.toggleEPG(EPG);
         });
     },
@@ -523,17 +526,15 @@ Bar.autoLoad.css("videoPlayer");
     //------------------------------------------------------------------------------------------------------------------
     makeEPG: function(EPG, list){
         if(!EPG || !list.length){
-            return $('<ol>').addClass('epg-list')
-                .html('<i>' + EPG + '</i><br>Not Available')
-                .appendTo('#epg-panel');
+            return $('<ol>').addClass('epg-list').html('<i>' + EPG + '</i><br>Not Available').appendTo('#epg-panel');
         }
 
         this.listing = this.listing || {};
 
-        // get saved (show) time positions
+        // get saved videos time positions from local storage (if any)
         this.listing[EPG] = $.parseJSON(this.localStorage.getItem(EPG)) || {};
 
-        // delete shows no longer in the list
+        // delete shows (from local storage) no longer in the list
         for(var l in this.listing[EPG]) {
             var deleteName = true;
             for(var m in list) {
@@ -628,8 +629,7 @@ Bar.autoLoad.css("videoPlayer");
 
     // adds a playlist button to the toolbox
     playList: function(playlist){
-        var cssClass = playlist.url.match(/dir/)? 'private-playlist':
-                    'public-playlist';
+        var cssClass = playlist.url.match(/dir/) ? 'private-playlist' : 'public-playlist';
 
         var data = {
             text: playlist.name,
@@ -642,14 +642,12 @@ Bar.autoLoad.css("videoPlayer");
                 title: playlist.title
             },
             click: function(){
-                if(!$("#epg-panel").is(":visible")
-                        && location.hash == '#VideoPlayer/EPG/' + playlist.EPG)
+                if(!$("#epg-panel").is(":visible") && location.hash == '#VideoPlayer/EPG/'+playlist.EPG)
                     $("#epg-panel").fadeIn();
             }
         };
 
-        if(this.status != "Authorized"
-                && data.attr['class'] == 'private-playlist'){
+        if(this.status != "Authorized" && data.attr['class'] == 'private-playlist') {
             data.css.display = "none";
         }
 
@@ -715,6 +713,11 @@ Bar.autoLoad.css("videoPlayer");
             backgroundPosition: 'center'
         })).get(0)
 
+        //TODO use (add) controls in panel
+        $('#epg-panel').find("ul.panel-header")
+        .append($("<li>").css({"float":"right", "vertical-align":"top", "padding":"4px", "font-size":"80%"})
+            .html('<input style="margin:4px" type="checkbox">stream'));
+
         //return $panel.get(0);
         return $.fn.panel.self.get('#epg-panel');
     })(),
@@ -772,7 +775,7 @@ Bar.autoLoad.css("videoPlayer");
 
                     var data = {
                         'data-id':  $(videoPlayer.video).attr('data-id'),
-                        'data-EPG': $(videoPlayer.video).attr('data-EPG'),
+                        'data-epg': $(videoPlayer.video).attr('data-epg'),
                         'data-name': $(videoPlayer.video).attr('data-name'),
                         'data-vtt': $(videoPlayer.video).attr('data-vtt'),
                         'data-time': videoPlayer.video.currentTime,
@@ -817,7 +820,7 @@ Bar.autoLoad.css("videoPlayer");
 
                     videoPlayer.saveCurrentTime(videoPlayer.video);
                     videoPlayer.setup({
-                        'data-EPG':'url',
+                        'data-epg':'url',
                         'data-name':'',
                         'data-id':''
                     });
@@ -885,7 +888,7 @@ Bar.autoLoad.css("videoPlayer");
         video = video || this.video;
         video.pause();
 
-        if($(video).attr('data-EPG') == 'file'){
+        if($(video).attr('data-epg') == 'file'){
             // pop-up window|dialog,modal,fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,
             newwindow = window.open(video.src, 'TV', 'resizable=no, height=405, width=720');
             if (window.focus) newwindow.focus();
@@ -914,59 +917,79 @@ Bar.autoLoad.css("videoPlayer");
         video.controls = video.controls ? false : true;
     },
 
-    myBookLiveTV: function(folder, name){
-        if(!folder || !folder.match(/^.*$/)) return false;
+    myBookLiveTV: function(folder){
+        if (!folder) return false;
+        if (!folder.dir || !folder.dir.match(/^.*$/)) return false;
 
-        if(!name) {
-            name = folder.replace(/\.S[0-9]+$/i, '');
-            name = name.replace(/\.+/g, ' ');
+        if(!folder.name) {
+            folder.name = folder.dir.replace(/\.S[0-9]+$/i, '');
+            folder.name = folder.name.replace(/\.+/g, ' ');
         }
 
-        var season = folder.match(/S([0-9]+)$/i);
+        var season = folder.dir.match(/S([0-9]+)$/i);
         if(season) season = ' Season '+ parseInt(season[1]);
         else season = '';
 
         //return data;
         this.playList({
-            url: '/dir/' + folder,
-            name: name,
-            title: name + season,
-            EPG: folder.replace(/\.+/g, '')
+            url: '/dir/' + folder.dir,
+            name: folder.name,
+            title: folder.name + season,
+            EPG: folder.dir.replace(/\.+/g, '')
         });
     },
 
     playSelectedFile: function(event){
         var URL = window.URL || window.webkitURL;
         var file = this.files[0];
+
         if(typeof file == 'undefined') return;
 
         var videoPlayer = Frontgate.Apps('myTV');
         var type = file.type;
         var canPlay = videoPlayer.video.canPlayType(type);
+
         canPlay = (canPlay === '' ? 'no' : canPlay);
         if(canPlay === 'no'){
             videoPlayer.info('Can play type "' +type+'": '+canPlay, 'error', 10000);
             return;
         }
+
         videoPlayer.saveCurrentTime(videoPlayer.video);
+
         videoPlayer.setup({
             src: URL.createObjectURL(file),
-            'data-EPG':'file',
+            'data-epg':'file',
             'data-name':file.name
         });
+
         videoPlayer.video.play();
+
         // reset file input field or wont change with the same video
         this.value = '';
         videoPlayer.unselectShow();
     },
 
+    ended: function() {
+        var myTV = Frontgate.Apps('myTV');
+        myTV.videoEnded = true;
+
+        //if(window.console && window.console.info) console.info("ended", this);
+
+        myTV.stop(this);
+        //myTV.info('');
+        //myTV.log('Video Show Ended');
+    },
+
     loadedMetadata: function() {
         var videoPlayer = Frontgate.Apps("myTV");
-        // start the video at...
-        this.currentTime = this.src.match(/^blob/i)? 0: // 0 for blobs
-            $(this).attr('data-time');
 
-        // HD icon
+        //console.info("loadedMetadata", this);
+
+        // start the video at...
+        this.currentTime = this.src.match(/^blob/i) ? 0 : $(this).attr('data-time');
+
+        /*/ HD icon
         var $hd = $('#tv-panel .panel-control[data-control="HD"]');
         if($(this).attr('data-hd') == 'true') {
             $hd.css('display', 'inline-block');
@@ -974,15 +997,17 @@ Bar.autoLoad.css("videoPlayer");
             if(this.videoWidth < 720) $hd.removeClass('selected');
         }
         else $hd.css('display', 'none');
+        //*/
 
-        //----------------------------------------------------------------------------------------------------------
         var videoWidth = this.videoWidth;
         var videoHeight = this.videoHeight;
-        // set video screen width
-        if(this.videoWidth >= 1280){
+
+        if(this.videoWidth >= 1280) {
             videoWidth = 854;
             videoHeight = (videoHeight*videoWidth)/this.videoWidth;
         }
+
+        // set video screen width
         $(videoPlayer.video).attr('width', videoWidth+'px');
         $(videoPlayer.video).attr('height', videoHeight +'px');
 
@@ -1104,7 +1129,7 @@ Bar.autoLoad.css("videoPlayer");
             // Private playlists (MyBook Live)
             var mbl = JSON.parse(FILE.json).myBookLive;
             for(var i=0; i< mbl.length; i++){
-                VideoPlayer.myBookLiveTV(mbl[i][0], mbl[i][1]);
+                VideoPlayer.myBookLiveTV(mbl[i]);
             }
 
             var offset = $('#body div.bar').offset();
