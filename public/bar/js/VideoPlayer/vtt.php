@@ -1,12 +1,17 @@
 <?php
 
 $sub = $_GET['sub'];
-$host = "/mnt/Public/Shared Videos/";//"http://situs.pt/myTV/vtt/";//
-$file = $host.$sub;
+$folder = "/mnt/Public/Shared Videos/";//"http://situs.pt/myTV/vtt/";
+$file = $folder . $sub;
 
-$content = file_get_contents($file);
-
-if(file_exists($file)){
-	header('Content-Type: text/vtt; charset=utf-8');
-	die($content);
+if(file_exists($file)) {
+    $content = file_get_contents($file);
+    header('Content-Type: text/vtt; charset=utf-8');
+    die($content);
 }
+
+header('HTTP/1.0 404 Not Found');
+echo "<h1>Error 404 Not Found</h1>";
+//readfile('404.html');
+
+exit();
