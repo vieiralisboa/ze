@@ -176,8 +176,15 @@
                 title: app['data-name']
             },
             click: function() {
-                console.info("beforeClick event", app, arguments);
-                app.navigator.publishEvent('beforeClick', route);
+                //console.info("click event", app, arguments);
+                app.navigator.publishEvent('click');
+                //*/TEMP try to fix it in the hashChange event
+                // ... the hash router won't work if there's no hash change ...
+                if(location.hash == app.href
+                    && app.href != app.navigator.$bar.find('li.bar-item.selected a').attr("href")) {
+                    location.hash = "";
+                    console.log("fixed hash");
+                }//*/
 
                 //console.log("Route < Click! Route! It Works!", app);
                 //TODO fix navigator ui bugs here
@@ -188,13 +195,14 @@
 
         // add tab route to publish events
         Frontgate.router.on(app.href, function(route){
+            //TODO
             //--------
             // Events
             //--------
-            // publish Navigator click
-            app.navigator.publishEvent('click', route);
-            // publish tab click event
-            app.toolbox.publishEvent('click');
+            // publish the hash event on the navigator
+            app.navigator.publishEvent('hash', route);
+            // publish the hash event on the toolbox
+            app.toolbox.publishEvent('hash');
             //----------
             // behavior
             //----------
@@ -262,7 +270,7 @@
 
     // Bar Constructor
     //-------------------------------------------------------------------------
-    Bar: function(items){
+    Bar: function(items) {
         // toolbar items list
         var $ul = $('<ul>').addClass('bar-items');
         var _items_ = [];
@@ -293,24 +301,17 @@
 
         // Item
         this.Item = function(data) {
-            // defauts
-            var attr = {};
-
-            // item container
-            this.$li = $('<li>').addClass('bar-item');
-
+            var attr = {};// defauts
+            this.$li = $('<li>').addClass('bar-item');// item container
             if (data.el) this.$el = $('<'+data.el+'>');
             else this.$el = $('<a>');
-
             _.extend(attr, data);
             Frontgate.set(this.$el, attr);
-
             this.$li.append(this.$el);
-
             return this;
         };
 
-        Frontgate._on(this);
+        Frontgate._on(this);// add events to this (Bar)
 
         this.items(items);
 
