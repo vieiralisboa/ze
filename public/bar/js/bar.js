@@ -181,7 +181,7 @@
                 console.log("Route < Click! Route! It Works!", app);
                 //TODO fix navigator ui bugs here
             }
-        }).;
+        });
 
         // add tab route to publish events
         Frontgate.router.on(app.href, function(route){
