@@ -175,10 +175,11 @@
                 href: app.href,
                 title: app['data-name']
             },
-            click: function(){
-                //console.log("publishing beforeClick");
+            click: function() {
+                console.info("beforeClick event", app, arguments);
                 app.navigator.publishEvent('beforeClick', route);
-                console.log("Route < Click! Route! It Works!", app);
+
+                //console.log("Route < Click! Route! It Works!", app);
                 //TODO fix navigator ui bugs here
             }
         });
