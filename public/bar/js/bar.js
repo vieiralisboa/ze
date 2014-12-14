@@ -169,7 +169,7 @@
         // append toolbox to navigator
         app.navigator.$bar.append(app.toolbox.$bar);
         // add navigator tab item for the toolbox
-        app.navigator.el = app.navigator.item({
+        var el = app.navigator.item({
             text: app['data-text'],
             attr:{
                 href: app.href,
@@ -182,6 +182,8 @@
                 //TODO fix navigator ui bugs here
             }
         });
+
+        app.el = el;
 
         // add tab route to publish events
         Frontgate.router.on(app.href, function(route){
