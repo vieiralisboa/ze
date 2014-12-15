@@ -10,19 +10,14 @@ Situs = window.Situs || window.Remote;
 //TODO auto create the Situs closure_compiler controller (API)
 
 (function(Minify) {
-
     Frontgate.Apps("CC-UI", Minify);
-
     Minify.API = Frontgate.location({
         hostname: $('html').attr('data-situs_hostname'),//"situs.no-ip.org",
         port: parseInt($('html').attr('data-situs_port')),//80,
         protocol: $('html').attr('data-situs_protocol'),//"http:"//,pathname: "/closer-compiler"
     });
 
-    Minify.API.auth({
-        user: "guest",
-        pw: "guest"
-    });
+    Minify.API.auth({ user: "guest", pw: "guest" });
 
     /*/
     console.info("API.href()", API.href());
@@ -38,7 +33,7 @@ Situs = window.Situs || window.Remote;
             $('body').append(template);
 
             // load Bar
-            Bar.load('#header', function(bar, data){
+            Bar.load('#header', function(bar, data) {
                 $('#header').bar(Minify.toolbar);
 
                 // add toolbox toggler
@@ -70,22 +65,17 @@ Situs = window.Situs || window.Remote;
                 editor.moveCursorTo(1, 0);
                 editor.focus();
 
-                // initial state for toolbox buttons
-                $('#download-file, #minify-view').hide();
-
-                // select code input
-                $('#uglify-view').click();
+                $('#download-file, #minify-view').hide();// initial state for toolbox buttons
+                $('#uglify-view').click();// select code input
             }, FILE);
         });
     });
 
-    if(window.console && console.info)
-        console.info(Minify.name, Minify.version.join("."));
+    if(window.console && console.info) console.info(Minify.name, Minify.version.join("."));
 })
 ({
     name: "Minify",
     version: [0, 5, 0],
-
     panelToggle: function(toggle){
         if(toggle){
             $('#closer-compiler').fadeIn();
@@ -96,7 +86,6 @@ Situs = window.Situs || window.Remote;
             $('#minify-icon').css('opacity','.4');
         }
     },
-
     toolbar: {
         items: [{
             el: "img",
@@ -111,42 +100,29 @@ Situs = window.Situs || window.Remote;
                 id: 'minify-icon'
             },
             click: function(){
-                if(!$('#closer-compiler').is(':visible'))
-                    location.hash = "#Minify";
+                if(!$('#closer-compiler').is(':visible')) location.hash = "#Minify";
                 else location.hash = "#Home";
-
-                //prevent hash change
-                return false;
+                return false;//prevent hash change
             }
         }],
-
         callback: function(bar){
-
             // Hash Routes
-            //-----------------------------------------------------------------
-
+            //-------------
             // upload js script (click event)
             bar.$bar.find('a[href="#Minify/upload"]').click(function(hash){
                 $('#file-upload').find('input').first().click();
-                // cancel location hash change
-                return false;
+                return false;// cancel location hash change
             });
-
             // upload js script (route event)
             Frontgate.router.on('#Minify/upload', function(hash){
                 $('#file-upload').find('input').first().click();
-                // restore hash
-                location.hash = "Minify";
+                location.hash = "Minify";// restore hash
             });
-
             // download javascript file
             Frontgate.router.on('#Minify/download', function(hash){
-                if($('#download-file').attr('href')){
-                    window.location.href = $('#download-file').attr('href');
-                }
+                if($('#download-file').attr('href')) window.location.href = $('#download-file').attr('href');
                 location.hash = "Minify";
             });
-
             // switch to JavaScript code
             Frontgate.router.on('#Minify/javascript', function(hash){
                 $('#uglify-view').parent().siblings().find("a[data-toggle='code']").removeClass("selected");
@@ -159,7 +135,6 @@ Situs = window.Situs || window.Remote;
                 }
                 location.hash = "Minify";
             });
-
             // switch to minified code
             Frontgate.router.on('#Minify/minified', function(hash){
                 $('#minify-view').parent().siblings().find("a[data-toggle='code']").removeClass("selected");
@@ -171,14 +146,11 @@ Situs = window.Situs || window.Remote;
                 else return false;
                 location.hash = "Minify";
             });
-
             // compile code
             Frontgate.router.on('#Minify/compile', function(hash){
                 var Minify = Frontgate.Apps("CC-UI");
-
                 // Minify controller auth
                 $.ajaxSetup({ beforeSend: Minify.API.xhrAuth() });
-
                 // Minify controller (API) call
                 $.ajax({
                     url: Minify.API.href('/closure_compiler/compile'),
@@ -196,18 +168,14 @@ Situs = window.Situs || window.Remote;
                         $('#download-file').show();
 
                         var file = Minify.API.hrefAuth('/closure_compiler/download/min-' +  res.file);
-                        document.getElementById("download-file")
-                            .setAttribute('href', file);
+                        document.getElementById("download-file").setAttribute('href', file);
                     }
                 });
-
                 // restore user auth
                 $.ajaxSetup({ beforeSend: Frontgate.xhrAuth() });
-
                 // restore hash
                 location.hash = "Minify";
             });
-
             // clear code
             Frontgate.router.on('#Minify/clear', function(hash){
                 editor.setValue("");
@@ -217,9 +185,8 @@ Situs = window.Situs || window.Remote;
                 editor.setValue("//JavaScript\n");
                 location.hash = "Minify";
             });
-
             // closer-compiler Toggle
-            Bar.app("Minify").navigator.subscribeEvent('click', function(route){
+            Bar.app("Minify").navigator.subscribeEvent('hash', function(route){
                 Frontgate.Apps("Minify").toolbox.App.panelToggle(route.res.input == '#Minify');
             });
 
@@ -249,15 +216,12 @@ Situs = window.Situs || window.Remote;
             });
         }
     },
-
     uploader: {
         validate: function(file){
             //console.info('uploader', this);
             //console.info('uploader validate', arguments);
-
             // Closure Compiler auth
             $.ajaxSetup({ beforeSend: this.API.xhrAuth() });
-
             var info = function(text, cssClass, t) {
                 text = text || '';
                 if(!text){
@@ -268,7 +232,6 @@ Situs = window.Situs || window.Remote;
                         });
                     return;
                 }
-
                 switch(cssClass){
                     case 'alert'://blue
                     case 'error'://red
@@ -285,24 +248,18 @@ Situs = window.Situs || window.Remote;
                             cssClass = 'info';
                         }
                 }
-
                 if(t || 0) setTimeout(function(){ info(); }, t);
-
                 $('#closer-compiler-myUI').attr('title', text).addClass(cssClass);
-
                 return;
             };
-
             // verify that the file is a JavaScript file
-            if(!file.name.match(/.js$/) && file.type != 'application/x-javascript'){
+            if(!file.name.match(/.js$/) && file.type != 'application/x-javascript') {
                 return info('wrong file type ( '+(file.type || '?')+' )', 'error', 10000);
             }
-
             // reject large files (> 1MB)
-            if(file.size/1024 > 1000){
+            if(file.size/1024 > 1000) {
                 return info('file is too big ('+Math.round(file.size/1024, 1)+' KB)', 'error', 10000);
             }
-
             return true;
         },
 
@@ -310,7 +267,6 @@ Situs = window.Situs || window.Remote;
         //beforeSend: Frontgate.xhrAuth("guest", "guest"),
         //url: Situs.hrefAuth('/closure_compiler'),
 
-        //
         success: function (res){
             // json parsing not required with jquery 2.0.0
             if(parseInt($.fn.jquery) < 2) res = JSON.parse(res);
@@ -318,25 +274,18 @@ Situs = window.Situs || window.Remote;
 //TODO Remote -> remote location from html header (to replace Situs)
             // restore user auth
             $.ajaxSetup({ beforeSend: Frontgate.xhrAuth() });
-
             editor.setValue(res.input);
-
             $("#code-output").val(res.output);
-
             location.hash = 'Minify/minified';
-
             $('#minify-view').show().click();
             $('#download-file').show();
-
             $("#file-upload form input").val("");
 
             //console.info('success',this,res);
 
 //TODO Remote -> remote location from html header (to replace Situs)
-            var file = Frontgate.Apps("CC-UI").API.hrefAuth()
-                +'closure_compiler/download/min-' + res.file;
-            document.getElementById("download-file")
-                .setAttribute('href', file);
+            var file = Frontgate.Apps("CC-UI").API.hrefAuth() + 'closure_compiler/download/min-' + res.file;
+            document.getElementById("download-file").setAttribute('href', file);
         }
     }
 });
