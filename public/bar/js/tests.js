@@ -206,6 +206,93 @@ $.getScript("https://situs.pt/frontgate/and/router", function() {
             Frontgate.Apps("Ze").bar.toolbar.item({ text: "!" });
             Frontgate.Apps("Ze").bar.toolbox.item({ text: ";-)" });
 
+            /* DEMO
+            //=========================
+            // using the jQuery plugin
+            //=========================
+            // add items to a toolbar
+            //------------------------
+            if(0) $("#basic").bar({
+                items:[{
+                    text: "Reload",
+                    click: function(){ location.reload(); },
+                    attr:{ id: "reload" },
+                    css:{ cursor: "pointer" }
+                }],
+                callback: function(bar) {
+                    // do something after adding toolbar item(s)
+                    $("#reload").parent().css("float", "right");
+                }
+            });
+            // add item to a toolbox
+            //-----------------------
+            if(0) $("#basic").bar({
+                toolbox:{
+                    name: "Compostos",
+                    items:[{ text:"Adicionar Rendimento" }]
+                }
+            });
+            // ... with callback
+            //-------------------
+            if(0) $("#basic").bar({
+                toolbox:{
+                    name: "Compostos",
+                    items: [{ text:"Toolbox_A1" }],
+                    callback: function(bar){
+                        // do something after adding toolbox item(s)
+
+                        // toolbox is a toolbar inside a toolbar
+                        bar.toolbox.item({ text:"Toolbox_A2" });
+                    }
+                }
+            });
+
+            //=======================
+            // using the Bar library
+            //=======================
+            // add item to a toolbar
+            //-----------------------
+            if(0) Bar.bar($("#basic")).item({ text: "Bar-1" });
+            // add item to a toolbox
+            //-----------------------
+            if(0) Bar.app("Compostos").toolbar.item({ text: "Bar-2" });
+            // add item to the toolbar navigator (toolbox tabs)
+            //--------------------------------------------------
+            if(0) {
+                Bar.app("Compostos").navigator.item({
+                    text: "Yo!",
+                    click: function(){ alert("Yo!"); },
+                    css:{ cursor: "pointer" },
+                    attr: {id: "yo"}
+                });
+                $("#yo").parent().css("float","right");
+            }
+
+            //=========================
+            // using the Frontgate App
+            //=========================
+            // add item to the toolbar
+            //-------------------------
+            if(0) Frontgate.Apps("Compostos").bar.toolbar.item({ text:"App-1" });
+            // add item to the toolbox
+            //-------------------------
+            if(0) Frontgate.Apps("Compostos").bar.toolbox.item({ text:"App-2" });
+
+            $("#hi").bar({
+                items: [{ text: "hello" }],
+                toolbox:{
+                    items: [{ text: "hello2" }],
+                    name: "Hell"
+                }
+            }).bar({
+                items: [{ text: "hello2" }],
+                toolbox:{
+                    items: [{ text: "hello22" }],
+                    name: "Hell2"
+                }
+            });
+            */
+
             //TODO verify Bar chainning
         })
         ({
