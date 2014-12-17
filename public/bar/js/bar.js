@@ -110,7 +110,7 @@
 
         // callback
         if (data.callback) {// 17/12/2014 0.9.0
-            if(typeof data.toolbox.name != "undefined") data.callback(Bar.app(data.toolbox.name), data);
+            if(data.toolbox && data.toolbox.name) data.callback(Bar.app(data.toolbox.name), data);
             else data.callback(app || bar, data);
         }
 
@@ -128,7 +128,7 @@
 })
 ({
     name: 'Bar',
-    version: [0, 9, 0],
+    version: [0, 9, 1],
     bars: [],
 
     bar: function($bar) {
