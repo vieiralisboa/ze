@@ -59,6 +59,10 @@
 	color: rgba(0, 0, 0, .35);
 }
 
+.panel > span{
+	clear: both;
+}
+
 .panel .control {
 	/* set in Constructor
 	margin: 10px;

@@ -40,7 +40,7 @@
 })
 ({
 	name: 'Panel',
-	version: [0, 2, 0],
+	version: [0, 2, 1],
 	panels:{},
 
 	make: function($panel, data){
@@ -102,7 +102,8 @@
 		// jQuery Elements
 		//---------------------------------------------------------------------
 		this.$panel = $panel.css({
-			padding: '26px 0 0 0',
+			//padding: '26px 0 0 0',
+			padding: 0,
 			margin: 0
 		});
 
@@ -197,7 +198,10 @@
 		// header
 		this.header({
 			css:{
-				height: 26
+				//height: 26
+				//position: "initial",
+				//border: "solid 1px rgba(0,0,0,.05)",
+				margin: 0
 			}
 		});
 
