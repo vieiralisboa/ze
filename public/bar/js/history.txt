@@ -1,0 +1,3 @@
+14/12/2014 Bar: Add navigator tab Item (el) to the bar object
+14/12/2014 Bar: Publish 'click' event on the navigator Item
+14/12/2014 Bar: Publish 'hash' route event on the navigator Item

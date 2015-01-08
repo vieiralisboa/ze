@@ -51,35 +51,40 @@
 
         var index, bar, bars, app;
 
-        // Existing bar
+        // Assuming that the TOOLBAR exists (because has .bar-container class)
         if(this.hasClass('bar-container')) {
-            //console.warn("element is a bar-container", this);
-
+            // find the bar
             bars = this.find('.bar');
 
+            // no bar found ...
             if(!bars.length) throw "invalid bar-container";//console.error("invalid bar-container", this);
 
-            // The toolbar index
+            // get the toolbar index
             index = bars.first().attr('data-bar');
+
+            // no index found: clear the bar
             if(typeof index == 'undefined') this.html("");
-            else {
-                // get the Bar instance
+            else {// or use the bar
+
+                // get the existing Bar by index
                 bar = Bar.bars[parseInt(index)];
 
                 // append toolbar items
-                if (data.items)
-                    bar.items(data.items);
+                if (data.items) bar.items(data.items);
 
-                // no toolbox
+                // no toolbox: done!
                 if (!data.toolbox) {
-                    if(data.callback) data.callback(bar);
+                    if(data.callback) data.callback(bar, data);
                     return this;
                 }
 
+                // A toolbox needs a name!
                 if (!data.toolbox.name) throw "a toolbox name is required";
 
+                //------------------------------------------------------------
                 // BAR ONLY CREATES NEW TOOLBOXES!
                 // use the bar object or callback to add items to the toolbox
+                //------------------------------------------------------------
 
                 // toolbox bar index
                 index = Bar.names(data.toolbox.name)['data-b64'];
@@ -88,13 +93,13 @@
                 if (Bar.app[index]) {
                     //console.log(data.toolbox.name, "toolbox is already set");
                     if (data.toolbox.items) Bar.app[index].toolbox.items(data.toolbox.items);
-                    if (data.callback) data.callback(Bar.app[index]);
+                    if (data.callback) data.callback(Bar.app[index], data);
                     return this;
                 }
 
                 // new toolbox and callback
                 if (Bar.toolbox(bar, data.toolbox) && data.callback) {// 17/12/2014 0.9.0
-                    data.callback(Bar.app(data.toolbox.name), data);
+                    data.callback(Bar.app(Bar.names(data.toolbox.name)['data-name']), data);
                     //data.callback(bar, data);
                 }
 
@@ -110,7 +115,14 @@
 
         // callback
         if (data.callback) {// 17/12/2014 0.9.0
-            if(data.toolbox && data.toolbox.name) data.callback(Bar.app(data.toolbox.name), data);
+            if(data.toolbox && data.toolbox.name) {
+                for(var z in Bar.app ) console.log(z, Bar.app[z]);
+                var _index = Bar.names(data.toolbox.name)['data-name'];
+                var _app = Bar.app(_index);
+                //data.callback(Bar.app( data.toolbox.name ), data);
+            } 
+
+            if(typeof _app != "undefined" ) data.callback(_app, data);
             else data.callback(app || bar, data);
         }
 
