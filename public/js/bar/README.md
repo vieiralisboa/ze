@@ -1,4 +1,0 @@
-Bar
-===
-
-Building Block
