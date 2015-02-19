@@ -3,7 +3,7 @@
 //
 // Author: José Vieira Lisboa
 // email: jose.vieira.lisboa@gmail.com
-// url: http://sítio.pt/Bsr
+// url: http://sítio.pt/Ze/bar.html
 //
 
 (function(Bar){
