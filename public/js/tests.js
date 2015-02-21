@@ -10,9 +10,12 @@ $("body").css("background-color", "rgb(245,245,245)");
 
 $.ajaxSetup({ cache: true });
 
-$.getScript("https://situs.pt/frontgate/and/router", function() {
-    Situs = new Frontgate.Location({ hostname: "situs.pt", protocol:  "https:" });
-    Situs.sync("lib/jquery-ui","lib/topzindex","lib/panel", "lib/_", "lib/bar", function(script) {
+//$.getScript("https://situs.pt/frontgate/and/router", function() {
+$.getScript("js/frontgate/frontgate-0.3.9.js", function() {
+    //Situs = new Frontgate.Location({ hostname: "situs.pt", protocol:  "https:" });
+    //Situs.sync("lib/jquery-ui","lib/topzindex","lib/panel", "lib/_", "lib/bar", function(script) {
+    Frontgate.sync("js/required/jquery-ui-1.10.2.custom.min.js", "js/required/jquery.topzindex.min.js", "js/required/underscore-min.js",
+        "js/frontgate/frontgate.router-1.1.1.js", "js/panel.js", "js/bar.js", function(script) {
 
         // Frontgate router starts to listen to hashchange events
         Frontgate.router.start();
@@ -67,7 +70,7 @@ $.getScript("https://situs.pt/frontgate/and/router", function() {
                 },
                 callback: function(bar){
                     console.log("#bar.bar", bar);
-                    bar.toolbar.$bar.css("cursor","move");
+                    bar.toolbar.$bar.css("cursor","s-resize");
                 }
             })
             .css("opacity", .9)
@@ -145,8 +148,23 @@ $.getScript("https://situs.pt/frontgate/and/router", function() {
 
                     attr: { href: "#Bar" },
                     click: function(){ alert("Bar") }
+                },
+                {
+                    text: "Fork Ze on GitHub",
+                    css: {
+                        "font-weight":"400",
+                        "font-style": "normal"
+                    },
+
+                    attr: {
+                        id: "ze-github",
+                        href: "https://github.com/vieiralisboa/ze"
+                    }
                 }],
-                callback: function(bar){ console.log("#minimal.bar", bar) }
+                callback: function(bar){
+                    console.log("#minimal.bar", bar);
+                    $("#ze-github").parent().css("float", "right");
+                }
             });
 
             //==================
