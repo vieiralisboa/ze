@@ -9,11 +9,12 @@ Situs = window.Situs || Frontgate.location({
     hostname: $("html").attr("data-situs_hostname"),
     protocol: $("html").attr("data-situs_protocol")
 });
-//Remote.stylesheet("bar/css/videoPlayer");
-Bar.autoLoad.css("videoPlayer");
 
+//Remote.stylesheet("bar/css/videoPlayer");
+Bar.autoLoad.css("VideoPlayer");
 //TODO merge autoLoad with load
 //Bar.load.css("videoPlayer");
+//Bar.css("videoPlayer");
 
 (function(myTV){
 
@@ -47,8 +48,9 @@ Bar.autoLoad.css("videoPlayer");
         myTV.templates.ol = template;
     });
 
+    //------------------
     // 2. Toolbar (Bar)
-    //------------------------------------------------------------------------------------------------------------------
+    //------------------
     Bar.load('#header', function(bar, data) {
         // toolbar items and callback
         $('#header').bar(myTV.toolbar);
@@ -66,8 +68,9 @@ Bar.autoLoad.css("videoPlayer");
         document.querySelector('#video-show-input').addEventListener('change', myTV.playSelectedFile, false);
     }, FILE);
 
-    //3. Event lsteners
-    //------------------------------------------------------------------------------------------------------------------
+    //--------------------
+    // 3. Event listeners
+    //--------------------
 
     // video metadata
     myTV.video.addEventListener('loadedmetadata', myTV.loadedMetadata, false);
@@ -117,8 +120,9 @@ Bar.autoLoad.css("videoPlayer");
         });
     });
 
+    //----------
     //4. Routes
-    //------------------------------------------------------------------------------------------------------------------
+    //----------
     // remote video
     Frontgate.router.on(myTV.hash('video/:folder/:video'), function(hash) {
         var href = "a.video-show[href='%href%']".replace("%href%", hash.res[0]).replace("\\","\\\\");
@@ -172,8 +176,9 @@ Bar.autoLoad.css("videoPlayer");
     localStorage: myStorage,
     templates: {},
 
+    //-----------------------------
     // Save current video position
-    //------------------------------------------------------------------------------------------------------------------
+    //-----------------------------
     saveCurrentTime: function(){
         // current playing video link
         var $el = $("a.video-show[data-src='"+$(this.video).attr('data-src')+"']");
@@ -213,8 +218,9 @@ Bar.autoLoad.css("videoPlayer");
             el.requestFullScreen();
     },
 
+    //------------
     // Play video
-    //------------------------------------------------------------------------------------------------------------------
+    //------------
     play: function(attr, callback){
         // Publish beforePlay event
         this.videoPanel.publishEvent('beforePlay', attr);
@@ -253,8 +259,9 @@ Bar.autoLoad.css("videoPlayer");
 
     },
 
+    //------------------------------
     // video attributes Constructor
-    //------------------------------------------------------------------------------------------------------------------
+    //------------------------------
     VideoData: function(data){
         if(data.src.match(/.mp4$/i)
             || data.src.match(/.m4v$/i)
@@ -270,16 +277,18 @@ Bar.autoLoad.css("videoPlayer");
         this['data-hd'] = data['data-m4v'] || false;
     },
 
+    //-----------------------
     // sets video attributes
-    //------------------------------------------------------------------------------------------------------------------
+    //-----------------------
     setup: function(attr){
         $(this.video).attr(new this.VideoData(attr));
     },
 
     videoEnded: false,
 
+    //------------------------------
     // Stop the video (rewind to 0)
-    //------------------------------------------------------------------------------------------------------------------
+    //------------------------------
     stop: function(video){
         video = video || this.video;
 
@@ -329,8 +338,9 @@ Bar.autoLoad.css("videoPlayer");
         }
     },
 
+    //--------------------------------
     // unselects Show (EPG) list item
-    //------------------------------------------------------------------------------------------------------------------
+    //--------------------------------
     unselectShow: function(){
         $('a.video-show.selected').removeClass('selected')
             .siblings('img.wait').removeClass('visible').addClass('hidden');
@@ -393,16 +403,18 @@ Bar.autoLoad.css("videoPlayer");
         });
     },
 
+    //----------------
     // EPG video show
-    //------------------------------------------------------------------------------------------------------------------
+    //----------------
     selectShow: function(el){
         if(!el) return false;
 
         this.play$a($(el));
     },
 
+    //-------------
     // Video Width
-    //------------------------------------------------------------------------------------------------------------------
+    //-------------
     videoWidth: function(width, el){
         if(!width) return $(this.video).attr('width');
 
@@ -419,8 +431,9 @@ Bar.autoLoad.css("videoPlayer");
         $(this.video).attr('width', width);
     },
 
+    //-------------------------------
     // Video listing from the server
-    //------------------------------------------------------------------------------------------------------------------
+    //-------------------------------
     getVideoList: function(url, callback){
         // ajax screen
         $('#epg-blocker').css('cursor','wait').fadeIn();
@@ -449,8 +462,9 @@ Bar.autoLoad.css("videoPlayer");
         });
     },
 
+    //-------------------------------------------------
     // fades in EPG panel and/or brings panel to front
-    //------------------------------------------------------------------------------------------------------------------
+    //-------------------------------------------------
     togglePanel: function($panel){
         // if the video Panel is not visible, fade in to top
         if(!$panel.is(':visible')){
@@ -460,8 +474,9 @@ Bar.autoLoad.css("videoPlayer");
         if( $panel.css("z-index") < $.topZIndex()) $panel.topZIndex();
     },
 
+    //-------------------------------
     // Auto Plays saved video source
-    //------------------------------------------------------------------------------------------------------------------
+    //-------------------------------
     autoPlayEPG: function(EPG){
         // a video is already playing
         if(this.video.currentTime != 0) return;
@@ -472,8 +487,9 @@ Bar.autoLoad.css("videoPlayer");
         this.selectShow($('.video-show[data-name="' + this.localStorage.getItem('last'+EPG+'Name') +'"]').get(0));
     },
 
+    //---------------------
     // Select EPG playList
-    //------------------------------------------------------------------------------------------------------------------
+    //---------------------
     selectEPG: function(EPG, href){
         var $panel = $("#epg-panel");
 
@@ -498,8 +514,9 @@ Bar.autoLoad.css("videoPlayer");
         //this.autoPlayEPG(EPG);
     },
 
+    //--------------------------------
     // loads EPG playList from server
-    //------------------------------------------------------------------------------------------------------------------
+    //--------------------------------
     loadEPG: function($trigger, href) {//EPG, href){
         var self = this;
         var EPG = $trigger.attr("data-epg");
@@ -522,8 +539,9 @@ Bar.autoLoad.css("videoPlayer");
         });
     },
 
+    //-----------------
     // EPG Render List
-    //------------------------------------------------------------------------------------------------------------------
+    //-----------------
     makeEPG: function(EPG, list){
         if(!EPG || !list.length){
             return $('<ol>').addClass('epg-list').html('<i>' + EPG + '</i><br>Not Available').appendTo('#epg-panel');
@@ -899,7 +917,8 @@ Bar.autoLoad.css("videoPlayer");
             var hash = '#';
             hash += video.src.replace(/\w+\:\w+\@/, '');
             hash += '&' + Math.floor(video.currentTime);
-            var url = Situs.href("VideoPlayer/popup") + hash;
+            //var url = Situs.href("VideoPlayer/popup") + hash;
+            var url = Frontgate.href("VideoPlayer/popup") + hash;
         }
 
         this.stop();
